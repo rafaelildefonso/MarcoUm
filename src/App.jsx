@@ -1,9 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 
-/* ─── FONTS via CSS injection ─── */
 const FONT_URL = "https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Barlow:wght@200;300;400;500&display=swap"
 
-/* ─── GLOBAL STYLES ─── */
 const GlobalStyle = () => {
   useEffect(() => {
     const link = document.createElement("link")
@@ -12,14 +10,10 @@ const GlobalStyle = () => {
     const style = document.createElement("style")
     style.textContent = `
       *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-      html{scroll-behavior:smooth;cursor:none}
+      html{scroll-behavior:smooth}
       body{background:#f4f0e8;color:#111;font-family:'Barlow',sans-serif;font-weight:300;overflow-x:hidden;-webkit-font-smoothing:antialiased}
       ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-track{background:#f4f0e8} ::-webkit-scrollbar-thumb{background:#c0392b}
       #prog{position:fixed;top:0;left:0;height:3px;background:#c0392b;z-index:10000;pointer-events:none;transition:width .05s linear}
-      #cur{position:fixed;width:10px;height:10px;background:#c0392b;border-radius:50%;pointer-events:none;z-index:99999;top:-5px;left:-5px;transition:width .25s,height .25s,top .25s,left .25s}
-      #cur2{position:fixed;width:34px;height:34px;border:1.5px solid rgba(0,0,0,.22);border-radius:50%;pointer-events:none;z-index:99998;top:-17px;left:-17px;transition:width .45s cubic-bezier(.16,1,.3,1),height .45s cubic-bezier(.16,1,.3,1),top .45s,left .45s}
-      body.hov #cur{width:18px;height:18px;top:-9px;left:-9px}
-      body.hov #cur2{width:54px;height:54px;top:-27px;left:-27px}
       .rv{opacity:0;transform:translateY(30px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
       .rv.in{opacity:1;transform:none}
       @keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
@@ -27,9 +21,62 @@ const GlobalStyle = () => {
       @keyframes lineUp{from{opacity:0;transform:translateY(110%)}to{opacity:1;transform:none}}
       @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
       @keyframes spin3d{from{transform:rotateX(-15deg) rotateY(0deg)}to{transform:rotateX(-15deg) rotateY(360deg)}}
+
       @media (max-width: 768px) {
-        html { cursor: auto !important; }
-        #cur, #cur2 { display: none !important; }
+        /* ── HEADER ── */
+        header { height: auto !important; flex-wrap: wrap !important; }
+        header nav { width: 100%; overflow-x: auto; }
+        header nav a { padding: 0 14px !important; font-size: 0.65rem !important; white-space: nowrap; }
+
+        /* ── HERO ── */
+        section[style*="min-height: 100vh"] > div[style*="padding: 120px"] {
+          padding: 100px 24px 60px !important;
+        }
+        /* stat cards flutuantes no lado direito → esconde no mobile */
+        section[style*="min-height: 100vh"] > div[style*="right: 60px"] {
+          display: none !important;
+        }
+        /* scroll label */
+        section[style*="min-height: 100vh"] > div[style*="bottom: 40px"] {
+          left: 24px !important;
+        }
+
+        /* ── MARQUEE ── */
+        /* sem alterações, funciona bem em mobile */
+
+        /* ── ABOUT ── */
+        .about-grid {
+          grid-template-columns: 1fr !important;
+          gap: 48px !important;
+          padding: 72px 24px !important;
+        }
+        .about-cubes { display: none !important; }
+
+        /* ── PRICING ── */
+        .pricing-section { padding: 72px 24px !important; }
+        .pricing-header { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+        .pricing-header p { text-align: left !important; }
+        .plans-grid { grid-template-columns: 1fr !important; }
+        .plans-grid > div { transform: none !important; }
+        .extras-grid { grid-template-columns: 1fr !important; }
+        .conditions-grid { grid-template-columns: 1fr !important; }
+        .conditions-grid > div[style*="span 2"] { grid-column: span 1 !important; }
+
+        /* ── SKILLS ── */
+        .skills-section { padding: 72px 24px !important; }
+        .skills-grid { grid-template-columns: repeat(2,1fr) !important; }
+
+        /* ── CONTACT ── */
+        .contact-section { padding: 72px 24px 60px !important; }
+        .contact-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+
+        /* ── FOOTER ── */
+        footer { padding: 60px 24px 32px !important; }
+        footer > div[style*="justify-content: space-between"]:last-child {
+          flex-direction: column !important;
+          gap: 12px !important;
+          align-items: flex-start !important;
+        }
       }
     `
     document.head.appendChild(style)
@@ -38,26 +85,8 @@ const GlobalStyle = () => {
   return null
 }
 
-/* ─── CUSTOM CURSOR ─── */
-function Cursor() {
-  useEffect(() => {
-    const cur = document.getElementById("cur"), cur2 = document.getElementById("cur2")
-    let mx = 0, my = 0, cx = 0, cy = 0
-    const onMove = e => { mx = e.clientX; my = e.clientY; cur.style.transform = `translate(${mx}px,${my}px)` }
-    const raf = () => { cur2.style.transform = `translate(${cx += (mx - cx) * .1}px,${cy += (my - cy) * .1}px)`; requestAnimationFrame(raf) }
-    document.addEventListener("mousemove", onMove, { passive: true })
-    raf()
-    const addHov = () => document.querySelectorAll("a,button,.hov-target").forEach(el => {
-      el.addEventListener("mouseenter", () => document.body.classList.add("hov"))
-      el.addEventListener("mouseleave", () => document.body.classList.remove("hov"))
-    })
-    setTimeout(addHov, 500)
-    return () => document.removeEventListener("mousemove", onMove)
-  }, [])
-  return null
-}
 
-/* ─── PROGRESS BAR ─── */
+
 function ProgressBar() {
   useEffect(() => {
     const el = document.getElementById("prog")
@@ -71,7 +100,6 @@ function ProgressBar() {
   return null
 }
 
-/* ─── SCROLL REVEAL ─── */
 function useReveal() {
   useEffect(() => {
     const io = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("in") }), { threshold: 0.07 })
@@ -80,8 +108,6 @@ function useReveal() {
   }, [])
 }
 
-
-/* ─── THREE.JS 3D HERO ─── */
 function ThreeHero() {
   const mountRef = useRef(null)
   const sceneRef = useRef(null)
@@ -112,7 +138,6 @@ function ThreeHero() {
       camera.position.set(0, 2, 10)
       camera.lookAt(0, 0, 0)
 
-      /* ── LIGHTS ── */
       const ambient = new THREE.AmbientLight(0xffffff, 0.3)
       scene.add(ambient)
       const dirLight = new THREE.DirectionalLight(0xffffff, 1.2)
@@ -126,13 +151,11 @@ function ThreeHero() {
       blueLight.position.set(4, -2, 3)
       scene.add(blueLight)
 
-      /* ── MATERIALS ── */
       const matDark = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.8, roughness: 0.2 })
       const matRed = new THREE.MeshStandardMaterial({ color: 0xc0392b, metalness: 0.6, roughness: 0.3 })
       const matCream = new THREE.MeshStandardMaterial({ color: 0xf4f0e8, metalness: 0.3, roughness: 0.6 })
       const matWire = new THREE.MeshBasicMaterial({ color: 0xc0392b, wireframe: true })
 
-      /* ── STACKED CUBES ── */
       const cubes = []
       const cubeData = [
         { size: 2.2, y: -2.2, mat: matDark, rx: 0.3, rz: 0.4 },
@@ -152,13 +175,11 @@ function ThreeHero() {
         scene.add(mesh)
       })
 
-      /* ── WIREFRAME CUBE ── */
       const wGeo = new THREE.BoxGeometry(4, 4, 4)
       const wMesh = new THREE.Mesh(wGeo, matWire)
       wMesh.position.set(-3, 0, -2)
       scene.add(wMesh)
 
-      /* ── FLOATING PARTICLES ── */
       const ptGeo = new THREE.BufferGeometry()
       const ptCount = 120
       const positions = new Float32Array(ptCount * 3)
@@ -174,12 +195,10 @@ function ThreeHero() {
       const pts = new THREE.Points(ptGeo, ptMat)
       scene.add(pts)
 
-      /* ── GRID PLANE ── */
       const gridHelper = new THREE.GridHelper(20, 20, 0x222222, 0x1a1a1a)
       gridHelper.position.y = -3.5
       scene.add(gridHelper)
 
-      /* ── GROUND SHADOW CATCHER ── */
       const shadowGeo = new THREE.PlaneGeometry(20, 20)
       const shadowMat = new THREE.ShadowMaterial({ opacity: 0.3 })
       const shadowPlane = new THREE.Mesh(shadowGeo, shadowMat)
@@ -188,7 +207,6 @@ function ThreeHero() {
       shadowPlane.receiveShadow = true
       scene.add(shadowPlane)
 
-      /* ── MOUSE PARALLAX ── */
       let mouseX = 0, mouseY = 0
       let targetMouseX = 0, targetMouseY = 0
 
@@ -274,8 +292,6 @@ function ThreeHero() {
   return <div ref={mountRef} style={{ width: "100%", height: "100%", position: "absolute", inset: 0 }} />
 }
 
-/* ─── 3D CARD (CSS 3D tilt) ─── */
-// FIX: added isolation: "isolate" to contain the perspective stacking context
 function Card3D({ children, style = {}, className = "" }) {
   const ref = useRef(null)
   const onMove = e => {
@@ -295,7 +311,6 @@ function Card3D({ children, style = {}, className = "" }) {
   )
 }
 
-/* ─── HEADER ─── */
 const HDR = {
   position: "fixed", top: 0, left: 0, right: 0, background: "#111", zIndex: 500,
   display: "flex", alignItems: "stretch", height: 58, fontFamily: "'Barlow Condensed',sans-serif"
@@ -319,7 +334,6 @@ function Header() {
   )
 }
 
-/* ─── HERO SECTION ─── */
 function HeroSection() {
   return (
     <section style={{ minHeight: "100vh", background: "#111", position: "relative", overflow: "hidden", display: "flex", alignItems: "center" }}>
@@ -375,7 +389,7 @@ function HeroSection() {
         <p style={{ animation: "fadeUp .8s .75s cubic-bezier(.16,1,.3,1) both", fontSize: "1rem", lineHeight: 1.75, color: "rgba(255,255,255,.45)", maxWidth: 420, marginBottom: 48, fontWeight: 300 }}>
           Criação de sites, landing pages e presença digital completa — do design à entrega, com atenção a cada detalhe.
         </p>
-        <div style={{ animation: "fadeUp .8s .9s cubic-bezier(.16,1,.3,1) both", display: "flex", gap: 3 }}>
+        <div style={{ animation: "fadeUp .8s .9s cubic-bezier(.16,1,.3,1) both", display: "flex", gap: 3, flexWrap: "wrap" }}>
           <a href="#servicos" style={{ background: "#c0392b", color: "#fff", fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", padding: "16px 36px", textDecoration: "none" }}>Ver planos →</a>
           <a href="#contato" style={{ background: "transparent", color: "rgba(255,255,255,.6)", fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", padding: "16px 36px", textDecoration: "none", border: "1.5px solid rgba(255,255,255,.15)" }}>Falar agora</a>
         </div>
@@ -409,7 +423,6 @@ function HeroSection() {
   )
 }
 
-/* ─── MARQUEE ─── */
 function Marquee() {
   const words = ["Sites", "✦", "Landing Pages", "✦", "SEO", "✦", "Google Maps", "✦", "WhatsApp", "✦", "Design", "✦", "Performance", "✦", "Mobile First", "✦"]
   const doubled = [...words, ...words, ...words, ...words]
@@ -430,7 +443,6 @@ function Marquee() {
   )
 }
 
-/* ─── 3D SPINNING CSS CUBE ─── */
 function CSSCube({ size = 120, color1 = "#111", color2 = "#c0392b", speed = "12s" }) {
   const faces = ["front", "back", "right", "left", "top", "bottom"]
   const transforms = [
@@ -438,7 +450,7 @@ function CSSCube({ size = 120, color1 = "#111", color2 = "#c0392b", speed = "12s
     `rotateY(90deg) translateZ(${size / 2}px)`, `rotateY(-90deg) translateZ(${size / 2}px)`,
     `rotateX(90deg) translateZ(${size / 2}px)`, `rotateX(-90deg) translateZ(${size / 2}px)`,
   ]
-  const labels = ["HTML", "CSS", "JS", "UX", "SEO", "Web"]
+  const labels = ["HTML", "CSS", "JS", "REACT", "UX", "Web"]
   return (
     <div style={{ width: size, height: size, perspective: 800, perspectiveOrigin: "50% 40%" }}>
       <div style={{ width: size, height: size, position: "relative", transformStyle: "preserve-3d", animation: `spin3d ${speed} linear infinite` }}>
@@ -459,10 +471,9 @@ function CSSCube({ size = 120, color1 = "#111", color2 = "#c0392b", speed = "12s
   )
 }
 
-/* ─── ABOUT SECTION ─── */
 function AboutSection() {
   return (
-    <section style={{ padding: "120px 60px", background: "#f4f0e8", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 100, alignItems: "center", position: "relative", overflow: "hidden" }} className="rv">
+    <section className="about-grid rv" style={{ padding: "120px 60px", background: "#f4f0e8", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 100, alignItems: "center", position: "relative", overflow: "hidden" }}>
       <div style={{
         position: "absolute",
         top: "20%",
@@ -518,7 +529,7 @@ function AboutSection() {
         </div>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, position: "relative", zIndex: 1 }}>
+      <div className="about-cubes" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, position: "relative", zIndex: 1 }}>
         {[
           { size: 160, speed: "10s", color1: "#111", color2: "#c0392b", factor: -0.1 },
           { size: 120, speed: "8s", color1: "#c0392b", color2: "#333", factor: -0.22 },
@@ -536,18 +547,17 @@ function AboutSection() {
   )
 }
 
-/* ─── PLAN CARD ─── */
 function PlanCard({ num, tag, name, price, period, features, deadline, featured }) {
   return (
-   <Card3D style={{
-  background: featured ? "#111" : "#ece8df",
-  padding: "44px 32px",
-  position: "relative",
-  overflow: "hidden",
-  borderTop: `3px solid ${featured ? "#c0392b" : "#111"}`,
-  contain: "paint",
-  marginTop: featured ? -24 : 0  // ← sobe o card featured
-}}>
+    <Card3D style={{
+      background: featured ? "#111" : "#ece8df",
+      padding: "44px 32px",
+      position: "relative",
+      overflow: "hidden",
+      borderTop: `3px solid ${featured ? "#c0392b" : "#111"}`,
+      contain: "paint",
+      marginTop: featured ? -24 : 0
+    }}>
       <div style={{
         position: "absolute",
         top: 20,
@@ -580,7 +590,6 @@ function PlanCard({ num, tag, name, price, period, features, deadline, featured 
   )
 }
 
-/* ─── PRICING SECTION ─── */
 const PLANS = [
   { num: "01", tag: "Mais rápido", name: "Landing Page", price: "500", period: "Pagamento único", deadline: "Entrega em 7 dias úteis", features: [{ t: "Design exclusivo e responsivo" }, { t: "Mobile-first" }, { t: "Formulário de contato / leads" }, { t: "Integração com WhatsApp" }, { t: "SEO básico" }, { t: "Certificado SSL (HTTPS)" }, { t: "Até 6 páginas internas", off: 1 }, { t: "Sistema de agendamento", off: 1 }, { t: "Blog com painel", off: 1 }, { t: "Treinamento incluído", off: 1 }] },
   { num: "02", tag: "Mais completo", name: "Site Completo", price: "1.500", period: "Pagamento único", deadline: "Entrega em 21 dias úteis", featured: true, features: [{ t: "Design exclusivo e responsivo" }, { t: "Mobile-first" }, { t: "Formulário de contato / leads" }, { t: "Integração com WhatsApp" }, { t: "SEO básico" }, { t: "Certificado SSL (HTTPS)" }, { t: "Até 6 páginas internas" }, { t: "Sistema de agendamento" }, { t: "Blog com painel" }, { t: "Treinamento incluído" }] },
@@ -589,33 +598,31 @@ const PLANS = [
 
 function PricingSection() {
   return (
-    <section style={{ padding: "120px 60px", background: "#f4f0e8" }} id="servicos">
-      <div className="rv" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 60, borderBottom: "2px solid #111", paddingBottom: 24 }}>
+    <section className="pricing-section" style={{ padding: "120px 60px", background: "#f4f0e8" }} id="servicos">
+      <div className="rv pricing-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 60, borderBottom: "2px solid #111", paddingBottom: 24 }}>
         <h2 style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "clamp(2.5rem,5vw,5rem)", fontWeight: 900, textTransform: "uppercase", lineHeight: 0.9, letterSpacing: "-0.01em", color: "#111" }}>
           Planos &<br /><span style={{ color: "#c0392b", fontStyle: "italic" }}>Preços</span>
         </h2>
         <p style={{ fontSize: "0.82rem", color: "#888", maxWidth: 200, textAlign: "right", lineHeight: 1.6, fontWeight: 300 }}>Transparência total, entrega no prazo.</p>
       </div>
 
-      {/* FIX: added alignItems: "start" so cards don't stretch beyond their content height */}
-      <div className="rv" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 2, transitionDelay: ".08s", alignItems: "stretch" }}>
-       {PLANS.map((p, i) => {
-  const factors = [-0.05, 0, -0.09]
-  const factor = factors[i]
-  return (
-    <div key={i} style={{
-      transform: `translateY(calc(max(0px, var(--scroll-y-smooth) - 1000px) * ${factor}))`,
-      transition: "transform 0s",
-      isolation: "isolate"
-    }}>
-      <PlanCard {...p} />
-    </div>
-  )
-})}
+      <div className="rv plans-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 2, transitionDelay: ".08s", alignItems: "stretch" }}>
+        {PLANS.map((p, i) => {
+          const factors = [-0.05, 0, -0.09]
+          const factor = factors[i]
+          return (
+            <div key={i} style={{
+              transform: `translateY(calc(max(0px, var(--scroll-y-smooth) - 1000px) * ${factor}))`,
+              transition: "transform 0s",
+              isolation: "isolate"
+            }}>
+              <PlanCard {...p} />
+            </div>
+          )
+        })}
       </div>
 
-      {/* Extras */}
-      <div className="rv" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, marginTop: 2, transitionDelay: ".14s" }}>
+      <div className="rv extras-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, marginTop: 2, transitionDelay: ".14s" }}>
         {[
           {
             title: "Manutenção\nMensal", priceEl: (
@@ -634,7 +641,7 @@ function PricingSection() {
           }
         ].map((ex, i) => (
           <div key={i} style={{ background: "#ece8df", padding: "40px 36px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28, flexWrap: "wrap", gap: 16 }}>
               <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "1.6rem", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.01em", color: "#111", lineHeight: 1 }}>{ex.title.replace("\\n", "\n").split("\n").map((l, j) => <span key={j} style={{ display: "block" }}>{l}</span>)}</div>
               {ex.priceEl}
             </div>
@@ -649,10 +656,9 @@ function PricingSection() {
         ))}
       </div>
 
-      {/* Conditions */}
       <div className="rv" style={{ marginTop: 52, transitionDelay: ".2s" }}>
         <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.24em", textTransform: "uppercase", color: "#aaa", marginBottom: 14 }}>Condições gerais</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+        <div className="conditions-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
           {[["Pagamento", "50% na assinatura · 50% na entrega"], ["Revisões", "Até 2 rodadas incluídas"], ["Conteúdo", "Textos e imagens fornecidos pelo cliente"], ["Validade", "30 dias a partir da emissão"]].map(([k, v]) => (
             <div key={k} style={{ background: "#ece8df", padding: "18px 24px", display: "flex", gap: 18, alignItems: "baseline" }}>
               <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#aaa", minWidth: 110, flexShrink: 0 }}>{k}</span>
@@ -669,12 +675,11 @@ function PricingSection() {
   )
 }
 
-/* ─── SKILLS SECTION ─── */
 const SKILLS = [
   { n: "01", name: "HTML & CSS", desc: "Interfaces responsivas e pixel-perfect" },
   { n: "02", name: "JavaScript", desc: "Interatividade e animações fluidas" },
   { n: "03", name: "SEO", desc: "Otimização orgânica para o Google" },
-  { n: "04", name: "UX Design", desc: "Foco em conversão e usabilidade" },
+  { n: "04", name: "REACT", desc: "Foco em conversão e usabilidade" },
   { n: "05", name: "Mobile First", desc: "Perfeito em qualquer dispositivo" },
   { n: "06", name: "WhatsApp", desc: "Integração direta para leads" },
   { n: "07", name: "Google Maps", desc: "Presença local e visibilidade" },
@@ -683,7 +688,7 @@ const SKILLS = [
 
 function SkillsSection() {
   return (
-    <section style={{ padding: "120px 60px", background: "#111", position: "relative", overflow: "hidden" }} id="habilidades">
+    <section className="skills-section" style={{ padding: "120px 60px", background: "#111", position: "relative", overflow: "hidden" }} id="habilidades">
       <div style={{
         position: "absolute",
         top: "35%",
@@ -710,7 +715,7 @@ function SkillsSection() {
         </h2>
         <CSSCube size={90} speed="9s" color1="#1a1a1a" color2="#c0392b" />
       </div>
-      <div className="rv" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 2, transitionDelay: ".08s", position: "relative", zIndex: 1 }}>
+      <div className="rv skills-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 2, transitionDelay: ".08s", position: "relative", zIndex: 1 }}>
         {SKILLS.map((s) => (
           <Card3D key={s.n} style={{ background: "rgba(255,255,255,.03)", padding: "36px 26px", borderTop: "2px solid rgba(255,255,255,.06)" }}>
             <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.55rem", fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(255,255,255,.2)", marginBottom: 24 }}>{s.n}</div>
@@ -723,7 +728,6 @@ function SkillsSection() {
   )
 }
 
-/* ─── CONTACT SECTION ─── */
 function ContactLink({ l }) {
   const [hov, setHov] = useState(false)
   return (
@@ -741,14 +745,12 @@ function ContactLink({ l }) {
 
 function ContactSection() {
   const links = [
-    { href: "mailto:seuemail@email.com", name: "E-mail", sub: "seuemail@email.com" },
-    { href: "https://wa.me/5531999999999", name: "WhatsApp", sub: "Resposta rápida" },
-    { href: "https://instagram.com", name: "Instagram", sub: "@seuinstagram" },
-    { href: "https://linkedin.com", name: "LinkedIn", sub: "Perfil profissional" },
+    { href: "mailto:marcoumweb@gmail.com", name: "E-mail", sub: "marcoumweb@gmail.com" },
+    { href: "https://wa.me/5531985979676", name: "WhatsApp", sub: "Resposta rápida" },
   ]
   return (
-    <section style={{ padding: "120px 60px 100px", background: "#f4f0e8" }} id="contato">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}>
+    <section className="contact-section" style={{ padding: "120px 60px 100px", background: "#f4f0e8" }} id="contato">
+      <div className="contact-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}>
         <div className="rv">
           <h2 style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "clamp(3.5rem,7vw,7rem)", fontWeight: 900, textTransform: "uppercase", lineHeight: 0.88, letterSpacing: "-0.01em", color: "#111", marginBottom: 24 }}>
             Vamos<br />trabalhar<br /><span style={{ fontStyle: "italic", color: "#c0392b" }}>juntos</span>
@@ -765,7 +767,6 @@ function ContactSection() {
   )
 }
 
-/* ─── FOOTER ─── */
 function Footer() {
   return (
     <footer style={{ background: "#111", padding: "80px 60px 40px", fontFamily: "'Barlow Condensed',sans-serif", borderTop: "1px solid rgba(255,255,255,.05)", position: "relative", overflow: "hidden" }}>
@@ -794,7 +795,6 @@ function Footer() {
   )
 }
 
-/* ─── APP ─── */
 export default function App() {
   useReveal()
 
@@ -852,9 +852,6 @@ export default function App() {
     <>
       <GlobalStyle />
       <div id="prog" />
-      <div id="cur" />
-      <div id="cur2" />
-      <Cursor />
       <ProgressBar />
       <Header />
       <HeroSection />
