@@ -8,6 +8,7 @@
     <title>Marco Um — Desenvolvimento Web & Design em BH</title>
     <meta name="description" content="Criação de sites, landing pages e presença digital completa. Design responsivo, SEO, performance e foco em conversão. Belo Horizonte." />
     <meta name="theme-color" content="#111111" />
+    <meta name="google-site-verification" content="FX31qdYGheWwpXOigDduSi9T4If2VEHDFxD-jo8hgUw" />
     <link rel="canonical" href="https://marcoumweb.com.br/" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Marco Um — Desenvolvimento Web & Design" />
@@ -44,14 +45,14 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Barlow:wght@200;300;400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Barlow:wght@200;300;400;500&display=swap" rel="stylesheet" /></noscript>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Barlow:wght@200;300;400;500&display=optional" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Barlow:wght@200;300;400;500&display=optional" rel="stylesheet" /></noscript>
     <link rel="preload" as="image" href="/logo_full_cover.png" />
     <style>
       *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
       html{scroll-behavior:smooth}
       body{background:#f4f0e8;color:#111;font-family:'Barlow',sans-serif;font-weight:300;overflow-x:hidden;-webkit-font-smoothing:antialiased;margin:0}
-      #root{width:100%;min-height:100svh;display:flex;flex-direction:column;box-sizing:border-box}
+      #root{width:100%;min-height:100svh;display:flex;flex-direction:column;box-sizing:border-box;overflow-x:hidden}
       ::-webkit-scrollbar{width:4px}
       ::-webkit-scrollbar-track{background:#f4f0e8}
       ::-webkit-scrollbar-thumb{background:#c0392b}
@@ -64,10 +65,13 @@
       @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
       @keyframes spin3d{from{transform:rotateX(-15deg) rotateY(0deg)}to{transform:rotateX(-15deg) rotateY(360deg)}}
       .hov-target{will-change:transform}
+      .hamburger-btn{display:none;flex-direction:column;justify-content:center;align-items:center;width:58px;height:58px;background:transparent;border:none;cursor:pointer;padding:18px 16px;gap:5px;margin-left:auto;flex-shrink:0}
+      .hamburger-btn span{display:block;width:100%;height:2px;background:#fff;border-radius:1px}
+      .mobile-menu{position:fixed;top:58px;left:0;right:0;background:#111;z-index:500;border-top:1px solid rgba(255,255,255,.07)}
+      .skills-grid{overflow:hidden}
       @media (max-width: 768px) {
-        header{height:auto!important;flex-wrap:wrap!important}
-        header nav{width:100%;overflow-x:auto}
-        header nav a{padding:0 14px!important;font-size:.65rem!important;white-space:nowrap}
+        .desktop-nav{display:none!important}
+        .hamburger-btn{display:flex!important}
         section[style*="min-height: 100vh"] > div[style*="padding: 120px"]{padding:100px 24px 60px!important}
         section[style*="min-height: 100vh"] > div[style*="right: 60px"]{display:none!important}
         section[style*="min-height: 100vh"] > div[style*="bottom: 40px"]{left:24px!important}
@@ -82,11 +86,16 @@
         .conditions-grid{grid-template-columns:1fr!important}
         .conditions-grid>div[style*="span 2"]{grid-column:span 1!important}
         .skills-section{padding:72px 24px!important}
-        .skills-grid{grid-template-columns:repeat(2,1fr)!important}
+        .skills-grid{grid-template-columns:repeat(2,1fr)!important;overflow:hidden!important}
+        .skills-grid .hov-target{padding:24px 16px!important}
         .contact-section{padding:72px 24px 60px!important}
         .contact-grid{grid-template-columns:1fr!important;gap:40px!important}
         footer{padding:60px 24px 32px!important}
         footer>div[style*="justify-content: space-between"]:last-child{flex-direction:column!important;gap:12px!important;align-items:flex-start!important}
+      }
+      @media (min-width: 769px) and (max-width: 1024px) {
+        .skills-grid{grid-template-columns:repeat(4,1fr)!important}
+        .skills-section{padding:80px 32px!important}
       }
     </style>
   </head>

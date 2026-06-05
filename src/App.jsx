@@ -29,6 +29,12 @@ function ThreeHero() {
 
   useEffect(() => {
     const mount = mountRef.current
+    let playing = true
+
+    const observer = new IntersectionObserver(([e]) => {
+      playing = e.isIntersecting
+    }, { threshold: 0 })
+    if (mount) observer.observe(mount)
 
     if (window.__THREE_LOADED) { initScene(); return }
     const s = document.createElement("script")
@@ -36,10 +42,15 @@ function ThreeHero() {
     s.onload = () => { window.__THREE_LOADED = true; initScene() }
     document.head.appendChild(s)
 
+    function isMobile() {
+      return window.innerWidth < 768
+    }
+
     function initScene() {
       const THREE = window.THREE
       if (!mount || sceneRef.current) return
 
+      const mobile = isMobile()
       const W = mount.clientWidth, H = mount.clientHeight
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
       renderer.setSize(W, H)
@@ -49,9 +60,9 @@ function ThreeHero() {
       mount.appendChild(renderer.domElement)
 
       const scene = new THREE.Scene()
-      const camera = new THREE.PerspectiveCamera(50, W / H, 0.1, 100)
-      camera.position.set(0, 2, 10)
-      camera.lookAt(0, 0, 0)
+      const camera = new THREE.PerspectiveCamera(mobile ? 45 : 50, W / H, 0.1, 100)
+      camera.position.set(0, mobile ? 0.5 : 2, mobile ? 14 : 10)
+      camera.lookAt(0, mobile ? 0.5 : 0, 0)
 
       const ambient = new THREE.AmbientLight(0xffffff, 0.3)
       scene.add(ambient)
@@ -71,18 +82,19 @@ function ThreeHero() {
       const matCream = new THREE.MeshStandardMaterial({ color: 0xf4f0e8, metalness: 0.3, roughness: 0.6 })
       const matWire = new THREE.MeshBasicMaterial({ color: 0xc0392b, wireframe: true })
 
+      const s = mobile ? 0.75 : 1
       const cubes = []
       const cubeData = [
-        { size: 2.2, y: -2.2, mat: matDark, rx: 0.3, rz: 0.4 },
-        { size: 1.7, y: -0.1, mat: matRed, rx: -0.2, rz: -0.3 },
-        { size: 1.2, y: 1.6, mat: matDark, rx: 0.5, rz: 0.2 },
-        { size: 0.8, y: 2.8, mat: matCream, rx: -0.4, rz: 0.6 },
-        { size: 0.5, y: 3.65, mat: matRed, rx: 0.2, rz: -0.5 },
+        { size: 2.2 * s, y: -2.2 * s, mat: matDark, rx: 0.3, rz: 0.4 },
+        { size: 1.7 * s, y: -0.1 * s, mat: matRed, rx: -0.2, rz: -0.3 },
+        { size: 1.2 * s, y: 1.6 * s, mat: matDark, rx: 0.5, rz: 0.2 },
+        { size: 0.8 * s, y: 2.8 * s, mat: matCream, rx: -0.4, rz: 0.6 },
+        { size: 0.5 * s, y: 3.65 * s, mat: matRed, rx: 0.2, rz: -0.5 },
       ]
       cubeData.forEach(d => {
         const geo = new THREE.BoxGeometry(d.size, d.size, d.size)
         const mesh = new THREE.Mesh(geo, d.mat)
-        mesh.position.set(2.5, d.y, 0)
+        mesh.position.set(mobile ? 0 : 2.5, d.y, 0)
         mesh.rotation.set(d.rx, 0, d.rz)
         mesh.castShadow = true
         mesh.receiveShadow = true
@@ -90,19 +102,20 @@ function ThreeHero() {
         scene.add(mesh)
       })
 
-      const wGeo = new THREE.BoxGeometry(4, 4, 4)
+      const wGeo = new THREE.BoxGeometry(4 * s, 4 * s, 4 * s)
       const wMesh = new THREE.Mesh(wGeo, matWire)
-      wMesh.position.set(-3, 0, -2)
+      wMesh.position.set(mobile ? 0 : -3, 0, mobile ? -2.5 : -2)
       scene.add(wMesh)
 
+      const ptRange = mobile ? 12 : 18
       const ptGeo = new THREE.BufferGeometry()
       const ptCount = 120
       const positions = new Float32Array(ptCount * 3)
       const ptVels = []
       for (let i = 0; i < ptCount; i++) {
-        positions[i * 3] = (Math.random() - .5) * 18
-        positions[i * 3 + 1] = (Math.random() - .5) * 14
-        positions[i * 3 + 2] = (Math.random() - .5) * 10
+        positions[i * 3] = (Math.random() - .5) * ptRange
+        positions[i * 3 + 1] = (Math.random() - .5) * (mobile ? 10 : 14)
+        positions[i * 3 + 2] = (Math.random() - .5) * (mobile ? 7 : 10)
         ptVels.push({ vx: (Math.random() - .5) * .005, vy: (Math.random() - .5) * .005 })
       }
       ptGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3))
@@ -135,6 +148,7 @@ function ThreeHero() {
 
       const animate = () => {
         animId = requestAnimationFrame(animate)
+        if (!playing) return
         frame++
         const t = frame * 0.005
         const scroll = (window.__smoothScrollY || 0)
@@ -160,8 +174,8 @@ function ThreeHero() {
         for (let i = 0; i < ptCount; i++) {
           pos[i * 3] += ptVels[i].vx
           pos[i * 3 + 1] += ptVels[i].vy
-          if (Math.abs(pos[i * 3]) > 9) ptVels[i].vx *= -1
-          if (Math.abs(pos[i * 3 + 1]) > 7) ptVels[i].vy *= -1
+          if (Math.abs(pos[i * 3]) > (mobile ? 6 : 9)) ptVels[i].vx *= -1
+          if (Math.abs(pos[i * 3 + 1]) > (mobile ? 5 : 7)) ptVels[i].vy *= -1
         }
         ptGeo.attributes.position.needsUpdate = true
 
@@ -169,9 +183,9 @@ function ThreeHero() {
         redLight.position.z = Math.cos(t * 0.7) * 5
 
         camera.position.x = mouseX * 3
-        camera.position.y = 2 + scrollFactor * -1.5 - mouseY * 2
-        camera.position.z = 10 + scrollFactor * -2
-        camera.lookAt(0, 0, 0)
+        camera.position.y = (mobile ? 0.5 : 2) + scrollFactor * -1.5 - mouseY * 2
+        camera.position.z = (mobile ? 14 : 10) + scrollFactor * -2
+        camera.lookAt(0, mobile ? 0.5 : 0, 0)
 
         renderer.render(scene, camera)
       }
@@ -188,6 +202,7 @@ function ThreeHero() {
     }
 
     return () => {
+      observer.disconnect()
       if (sceneRef.current) {
         cancelAnimationFrame(sceneRef.current.animId)
         window.removeEventListener("resize", sceneRef.current.onResize)
@@ -231,17 +246,42 @@ const HDR = {
   display: "flex", alignItems: "stretch", height: 58, fontFamily: "'Barlow Condensed',sans-serif"
 }
 function Header() {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const links = [
+    ["#servicos", "Serviços"],
+    ["#habilidades", "Skills"],
+    ["#contato", "Contato"],
+  ]
   return (
     <header style={HDR}>
       <a href="#" style={{ display: "flex", alignItems: "center", padding: "0 24px", borderRight: "1px solid rgba(255,255,255,.1)", textDecoration: "none" }}>
         <img src="/logo_full_cover.png" alt="Marco Um" width={131} height={40} style={{ display: "block" }} />
       </a>
-      <nav style={{ display: "flex", marginLeft: "auto" }}>
-        {[["#servicos", "Serviços"], ["#habilidades", "Skills"]].map(([h, l]) => (
-          <a key={h} href={h} style={{ display: "flex", alignItems: "center", padding: "0 22px", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,.5)", textDecoration: "none", borderLeft: "1px solid rgba(255,255,255,.07)" }}>{l}</a>
+      <nav className="desktop-nav" style={{ display: "flex", marginLeft: "auto" }}>
+        {links.map(([h, l]) => (
+          <a key={h} href={h} style={{ display: "flex", alignItems: "center", padding: "0 22px", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: h === "#contato" ? "#fff" : "rgba(255,255,255,.5)", textDecoration: "none", borderLeft: "1px solid rgba(255,255,255,.07)", background: h === "#contato" ? "#c0392b" : "transparent" }}>
+            {l}
+          </a>
         ))}
-        <a href="#contato" style={{ display: "flex", alignItems: "center", padding: "0 28px", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#fff", textDecoration: "none", background: "#c0392b", borderLeft: "1px solid #a93226" }}>Contato</a>
       </nav>
+      <button className="hamburger-btn" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
+        <span />
+        <span />
+        <span />
+      </button>
+      {menuOpen && (
+        <div className="mobile-menu" onClick={() => setMenuOpen(false)}>
+          {links.map(([h, l]) => (
+            <a key={h} href={h} style={{
+              display: "block", padding: "16px 24px", fontSize: "0.82rem", fontWeight: 700,
+              letterSpacing: "0.2em", textTransform: "uppercase", textDecoration: "none",
+              color: h === "#contato" ? "#fff" : "rgba(255,255,255,.7)",
+              background: h === "#contato" ? "#c0392b" : "transparent",
+              borderBottom: "1px solid rgba(255,255,255,.07)"
+            }}>{l}</a>
+          ))}
+        </div>
+      )}
     </header>
   )
 }
@@ -253,25 +293,6 @@ function HeroSection() {
 
       <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px)", backgroundSize: "60px 60px", pointerEvents: "none" }} />
 
-      <div style={{
-        position: "absolute",
-        bottom: "8%",
-        left: "-20%",
-        whiteSpace: "nowrap",
-        fontFamily: "'Barlow Condensed',sans-serif",
-        fontSize: "15vw",
-        fontWeight: 900,
-        textTransform: "uppercase",
-        letterSpacing: "0.08em",
-        color: "transparent",
-        WebkitTextStroke: "1px rgba(255,255,255,0.03)",
-        pointerEvents: "none",
-        zIndex: 1,
-        transform: "translateX(calc(var(--scroll-y-smooth) * 0.25))",
-        transition: "transform 0s"
-      }}>
-        MARCO UM ✦ DIGITAL STUDIO ✦
-      </div>
 
       <div style={{
         position: "relative",
@@ -497,7 +518,7 @@ function PlanCard({ num, tag, name, price, period, features, deadline, featured 
       <div style={{ height: 1, background: featured ? "rgba(255,255,255,.08)" : "rgba(0,0,0,.08)", marginBottom: 24 }} />
       <ul style={{ listStyle: "none" }}>
         {features.map((f, i) => (
-          <li key={i} style={{ display: "flex", gap: 10, padding: "8px 0", fontSize: "0.82rem", color: f.off ? (featured ? "rgba(255,255,255,.15)" : "#ccc") : (featured ? "rgba(255,255,255,.55)" : "#555"), borderBottom: `1px solid ${featured ? "rgba(255,255,255,.06)" : "rgba(0,0,0,.06)"}` }}>
+          <li key={i} style={{ display: "flex", gap: 10, padding: "8px 0", fontSize: "0.82rem", fontWeight: 500, color: f.off ? (featured ? "rgba(255,255,255,.35)" : "#999") : (featured ? "rgba(255,255,255,.65)" : "#444"), borderBottom: `1px solid ${featured ? "rgba(255,255,255,.06)" : "rgba(0,0,0,.06)"}` }}>
             <span style={{ flexShrink: 0, fontSize: "0.68rem", marginTop: 2, color: f.off ? "#666" : "#c0392b", fontWeight: 700 }}>{f.off ? "–" : "✓"}</span>
             {f.t}
           </li>
@@ -729,6 +750,11 @@ export default function App() {
     window.addEventListener("scroll", onScroll, { passive: true })
 
     const loop = () => {
+      if (document.hidden) {
+        rafId = requestAnimationFrame(loop)
+        return
+      }
+
       currentY += (targetY - currentY) * 0.1
       if (Math.abs(targetY - currentY) < 0.05) {
         currentY = targetY
