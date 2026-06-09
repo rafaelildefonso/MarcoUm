@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://marcoum.vercel.app/sitemap.xml

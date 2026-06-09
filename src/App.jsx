@@ -1,90 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-
-const FONT_URL = "https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Barlow:wght@200;300;400;500&display=swap"
-
-const GlobalStyle = () => {
-  useEffect(() => {
-    const link = document.createElement("link")
-    link.rel = "stylesheet"; link.href = FONT_URL
-    document.head.appendChild(link)
-    const style = document.createElement("style")
-    style.textContent = `
-      *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-      html{scroll-behavior:smooth}
-      body{background:#f4f0e8;color:#111;font-family:'Barlow',sans-serif;font-weight:300;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-      ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-track{background:#f4f0e8} ::-webkit-scrollbar-thumb{background:#c0392b}
-      #prog{position:fixed;top:0;left:0;height:3px;background:#c0392b;z-index:10000;pointer-events:none;transition:width .05s linear}
-      .rv{opacity:0;transform:translateY(30px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
-      .rv.in{opacity:1;transform:none}
-      @keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-      @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-      @keyframes lineUp{from{opacity:0;transform:translateY(110%)}to{opacity:1;transform:none}}
-      @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
-      @keyframes spin3d{from{transform:rotateX(-15deg) rotateY(0deg)}to{transform:rotateX(-15deg) rotateY(360deg)}}
-
-      @media (max-width: 768px) {
-        /* ── HEADER ── */
-        header { height: auto !important; flex-wrap: wrap !important; }
-        header nav { width: 100%; overflow-x: auto; }
-        header nav a { padding: 0 14px !important; font-size: 0.65rem !important; white-space: nowrap; }
-
-        /* ── HERO ── */
-        section[style*="min-height: 100vh"] > div[style*="padding: 120px"] {
-          padding: 100px 24px 60px !important;
-        }
-        /* stat cards flutuantes no lado direito → esconde no mobile */
-        section[style*="min-height: 100vh"] > div[style*="right: 60px"] {
-          display: none !important;
-        }
-        /* scroll label */
-        section[style*="min-height: 100vh"] > div[style*="bottom: 40px"] {
-          left: 24px !important;
-        }
-
-        /* ── MARQUEE ── */
-        /* sem alterações, funciona bem em mobile */
-
-        /* ── ABOUT ── */
-        .about-grid {
-          grid-template-columns: 1fr !important;
-          gap: 48px !important;
-          padding: 72px 24px !important;
-        }
-        .about-cubes { display: none !important; }
-
-        /* ── PRICING ── */
-        .pricing-section { padding: 72px 24px !important; }
-        .pricing-header { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
-        .pricing-header p { text-align: left !important; }
-        .plans-grid { grid-template-columns: 1fr !important; }
-        .plans-grid > div { transform: none !important; }
-        .extras-grid { grid-template-columns: 1fr !important; }
-        .conditions-grid { grid-template-columns: 1fr !important; }
-        .conditions-grid > div[style*="span 2"] { grid-column: span 1 !important; }
-
-        /* ── SKILLS ── */
-        .skills-section { padding: 72px 24px !important; }
-        .skills-grid { grid-template-columns: repeat(2,1fr) !important; }
-
-        /* ── CONTACT ── */
-        .contact-section { padding: 72px 24px 60px !important; }
-        .contact-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
-
-        /* ── FOOTER ── */
-        footer { padding: 60px 24px 32px !important; }
-        footer > div[style*="justify-content: space-between"]:last-child {
-          flex-direction: column !important;
-          gap: 12px !important;
-          align-items: flex-start !important;
-        }
-      }
-    `
-    document.head.appendChild(style)
-    return () => { document.head.removeChild(link); document.head.removeChild(style) }
-  }, [])
-  return null
-}
-
+import { Analytics } from "@vercel/analytics/react"
 
 
 function ProgressBar() {
@@ -114,6 +29,12 @@ function ThreeHero() {
 
   useEffect(() => {
     const mount = mountRef.current
+    let playing = true
+
+    const observer = new IntersectionObserver(([e]) => {
+      playing = e.isIntersecting
+    }, { threshold: 0 })
+    if (mount) observer.observe(mount)
 
     if (window.__THREE_LOADED) { initScene(); return }
     const s = document.createElement("script")
@@ -121,10 +42,15 @@ function ThreeHero() {
     s.onload = () => { window.__THREE_LOADED = true; initScene() }
     document.head.appendChild(s)
 
+    function isMobile() {
+      return window.innerWidth < 768
+    }
+
     function initScene() {
       const THREE = window.THREE
       if (!mount || sceneRef.current) return
 
+      const mobile = isMobile()
       const W = mount.clientWidth, H = mount.clientHeight
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
       renderer.setSize(W, H)
@@ -134,9 +60,9 @@ function ThreeHero() {
       mount.appendChild(renderer.domElement)
 
       const scene = new THREE.Scene()
-      const camera = new THREE.PerspectiveCamera(50, W / H, 0.1, 100)
-      camera.position.set(0, 2, 10)
-      camera.lookAt(0, 0, 0)
+      const camera = new THREE.PerspectiveCamera(mobile ? 45 : 50, W / H, 0.1, 100)
+      camera.position.set(0, mobile ? 0.5 : 2, mobile ? 14 : 10)
+      camera.lookAt(0, mobile ? 0.5 : 0, 0)
 
       const ambient = new THREE.AmbientLight(0xffffff, 0.3)
       scene.add(ambient)
@@ -156,18 +82,19 @@ function ThreeHero() {
       const matCream = new THREE.MeshStandardMaterial({ color: 0xf4f0e8, metalness: 0.3, roughness: 0.6 })
       const matWire = new THREE.MeshBasicMaterial({ color: 0xc0392b, wireframe: true })
 
+      const s = mobile ? 0.75 : 1
       const cubes = []
       const cubeData = [
-        { size: 2.2, y: -2.2, mat: matDark, rx: 0.3, rz: 0.4 },
-        { size: 1.7, y: -0.1, mat: matRed, rx: -0.2, rz: -0.3 },
-        { size: 1.2, y: 1.6, mat: matDark, rx: 0.5, rz: 0.2 },
-        { size: 0.8, y: 2.8, mat: matCream, rx: -0.4, rz: 0.6 },
-        { size: 0.5, y: 3.65, mat: matRed, rx: 0.2, rz: -0.5 },
+        { size: 2.2 * s, y: -2.2 * s, mat: matDark, rx: 0.3, rz: 0.4 },
+        { size: 1.7 * s, y: -0.1 * s, mat: matRed, rx: -0.2, rz: -0.3 },
+        { size: 1.2 * s, y: 1.6 * s, mat: matDark, rx: 0.5, rz: 0.2 },
+        { size: 0.8 * s, y: 2.8 * s, mat: matCream, rx: -0.4, rz: 0.6 },
+        { size: 0.5 * s, y: 3.65 * s, mat: matRed, rx: 0.2, rz: -0.5 },
       ]
       cubeData.forEach(d => {
         const geo = new THREE.BoxGeometry(d.size, d.size, d.size)
         const mesh = new THREE.Mesh(geo, d.mat)
-        mesh.position.set(2.5, d.y, 0)
+        mesh.position.set(mobile ? 0 : 2.5, d.y, 0)
         mesh.rotation.set(d.rx, 0, d.rz)
         mesh.castShadow = true
         mesh.receiveShadow = true
@@ -175,19 +102,20 @@ function ThreeHero() {
         scene.add(mesh)
       })
 
-      const wGeo = new THREE.BoxGeometry(4, 4, 4)
+      const wGeo = new THREE.BoxGeometry(4 * s, 4 * s, 4 * s)
       const wMesh = new THREE.Mesh(wGeo, matWire)
-      wMesh.position.set(-3, 0, -2)
+      wMesh.position.set(mobile ? 0 : -3, 0, mobile ? -2.5 : -2)
       scene.add(wMesh)
 
+      const ptRange = mobile ? 12 : 18
       const ptGeo = new THREE.BufferGeometry()
       const ptCount = 120
       const positions = new Float32Array(ptCount * 3)
       const ptVels = []
       for (let i = 0; i < ptCount; i++) {
-        positions[i * 3] = (Math.random() - .5) * 18
-        positions[i * 3 + 1] = (Math.random() - .5) * 14
-        positions[i * 3 + 2] = (Math.random() - .5) * 10
+        positions[i * 3] = (Math.random() - .5) * ptRange
+        positions[i * 3 + 1] = (Math.random() - .5) * (mobile ? 10 : 14)
+        positions[i * 3 + 2] = (Math.random() - .5) * (mobile ? 7 : 10)
         ptVels.push({ vx: (Math.random() - .5) * .005, vy: (Math.random() - .5) * .005 })
       }
       ptGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3))
@@ -220,6 +148,7 @@ function ThreeHero() {
 
       const animate = () => {
         animId = requestAnimationFrame(animate)
+        if (!playing) return
         frame++
         const t = frame * 0.005
         const scroll = (window.__smoothScrollY || 0)
@@ -245,8 +174,8 @@ function ThreeHero() {
         for (let i = 0; i < ptCount; i++) {
           pos[i * 3] += ptVels[i].vx
           pos[i * 3 + 1] += ptVels[i].vy
-          if (Math.abs(pos[i * 3]) > 9) ptVels[i].vx *= -1
-          if (Math.abs(pos[i * 3 + 1]) > 7) ptVels[i].vy *= -1
+          if (Math.abs(pos[i * 3]) > (mobile ? 6 : 9)) ptVels[i].vx *= -1
+          if (Math.abs(pos[i * 3 + 1]) > (mobile ? 5 : 7)) ptVels[i].vy *= -1
         }
         ptGeo.attributes.position.needsUpdate = true
 
@@ -254,9 +183,9 @@ function ThreeHero() {
         redLight.position.z = Math.cos(t * 0.7) * 5
 
         camera.position.x = mouseX * 3
-        camera.position.y = 2 + scrollFactor * -1.5 - mouseY * 2
-        camera.position.z = 10 + scrollFactor * -2
-        camera.lookAt(0, 0, 0)
+        camera.position.y = (mobile ? 0.5 : 2) + scrollFactor * -1.5 - mouseY * 2
+        camera.position.z = (mobile ? 14 : 10) + scrollFactor * -2
+        camera.lookAt(0, mobile ? 0.5 : 0, 0)
 
         renderer.render(scene, camera)
       }
@@ -273,6 +202,7 @@ function ThreeHero() {
     }
 
     return () => {
+      observer.disconnect()
       if (sceneRef.current) {
         cancelAnimationFrame(sceneRef.current.animId)
         window.removeEventListener("resize", sceneRef.current.onResize)
@@ -316,20 +246,42 @@ const HDR = {
   display: "flex", alignItems: "stretch", height: 58, fontFamily: "'Barlow Condensed',sans-serif"
 }
 function Header() {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const links = [
+    ["#servicos", "Serviços"],
+    ["#habilidades", "Skills"],
+    ["#contato", "Contato"],
+  ]
   return (
     <header style={HDR}>
-      <a href="#" style={{ display: "flex", alignItems: "center", padding: "0 32px", borderRight: "1px solid rgba(255,255,255,.1)", textDecoration: "none" }}>
-        <div>
-          <div style={{ fontSize: "1.15rem", fontWeight: 900, color: "#fff", letterSpacing: "0.08em", textTransform: "uppercase", lineHeight: 1 }}>Marco Um</div>
-          <div style={{ fontSize: "0.55rem", fontWeight: 700, color: "rgba(255,255,255,.35)", letterSpacing: "0.3em", textTransform: "uppercase", marginTop: 3 }}>Web Dev</div>
-        </div>
+      <a href="#" style={{ display: "flex", alignItems: "center", padding: "0 24px", borderRight: "1px solid rgba(255,255,255,.1)", textDecoration: "none" }}>
+        <img src="/logo_full_cover.png" alt="Marco Um" width={131} height={40} style={{ display: "block" }} />
       </a>
-      <nav style={{ display: "flex", marginLeft: "auto" }}>
-        {[["#servicos", "Serviços"], ["#habilidades", "Skills"]].map(([h, l]) => (
-          <a key={h} href={h} style={{ display: "flex", alignItems: "center", padding: "0 22px", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,.5)", textDecoration: "none", borderLeft: "1px solid rgba(255,255,255,.07)" }}>{l}</a>
+      <nav className="desktop-nav" style={{ display: "flex", marginLeft: "auto" }}>
+        {links.map(([h, l]) => (
+          <a key={h} href={h} style={{ display: "flex", alignItems: "center", padding: "0 22px", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: h === "#contato" ? "#fff" : "rgba(255,255,255,.5)", textDecoration: "none", borderLeft: "1px solid rgba(255,255,255,.07)", background: h === "#contato" ? "#c0392b" : "transparent" }}>
+            {l}
+          </a>
         ))}
-        <a href="#contato" style={{ display: "flex", alignItems: "center", padding: "0 28px", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#fff", textDecoration: "none", background: "#c0392b", borderLeft: "1px solid #a93226" }}>Contato</a>
       </nav>
+      <button className="hamburger-btn" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
+        <span />
+        <span />
+        <span />
+      </button>
+      {menuOpen && (
+        <div className="mobile-menu" onClick={() => setMenuOpen(false)}>
+          {links.map(([h, l]) => (
+            <a key={h} href={h} style={{
+              display: "block", padding: "16px 24px", fontSize: "0.82rem", fontWeight: 700,
+              letterSpacing: "0.2em", textTransform: "uppercase", textDecoration: "none",
+              color: h === "#contato" ? "#fff" : "rgba(255,255,255,.7)",
+              background: h === "#contato" ? "#c0392b" : "transparent",
+              borderBottom: "1px solid rgba(255,255,255,.07)"
+            }}>{l}</a>
+          ))}
+        </div>
+      )}
     </header>
   )
 }
@@ -341,25 +293,6 @@ function HeroSection() {
 
       <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px)", backgroundSize: "60px 60px", pointerEvents: "none" }} />
 
-      <div style={{
-        position: "absolute",
-        bottom: "8%",
-        left: "-20%",
-        whiteSpace: "nowrap",
-        fontFamily: "'Barlow Condensed',sans-serif",
-        fontSize: "15vw",
-        fontWeight: 900,
-        textTransform: "uppercase",
-        letterSpacing: "0.08em",
-        color: "transparent",
-        WebkitTextStroke: "1px rgba(255,255,255,0.03)",
-        pointerEvents: "none",
-        zIndex: 1,
-        transform: "translateX(calc(var(--scroll-y-smooth) * 0.25))",
-        transition: "transform 0s"
-      }}>
-        MARCO UM ✦ DIGITAL STUDIO ✦
-      </div>
 
       <div style={{
         position: "relative",
@@ -369,7 +302,7 @@ function HeroSection() {
         opacity: "max(0, calc(1 - var(--scroll-y-smooth) / 600px))",
         transition: "transform 0s, opacity 0s"
       }}>
-        <div style={{ animation: "fadeUp .8s .2s cubic-bezier(.16,1,.3,1) both", fontSize: "0.65rem", fontWeight: 700, fontFamily: "'Barlow Condensed',sans-serif", letterSpacing: "0.28em", textTransform: "uppercase", color: "#c0392b", marginBottom: 36, display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ animation: "fadeUp .3s .05s cubic-bezier(.16,1,.3,1) both", fontSize: "0.65rem", fontWeight: 700, fontFamily: "'Barlow Condensed',sans-serif", letterSpacing: "0.28em", textTransform: "uppercase", color: "#c0392b", marginBottom: 36, display: "flex", alignItems: "center", gap: 12 }}>
           <span style={{ width: 28, height: 2, background: "#c0392b", display: "block" }} />
           Desenvolvimento Web & Design
         </div>
@@ -382,14 +315,14 @@ function HeroSection() {
               transform: `translateY(calc(var(--scroll-y-smooth) * ${0.05 + i * 0.05}))`,
               transition: "transform 0s"
             }}>
-              <span style={{ display: "block", animation: `lineUp .9s ${.25 + i * .15}s cubic-bezier(.16,1,.3,1) both` }}>{t}</span>
+              <span style={{ display: "block", animation: `lineUp .5s ${i * 0.08}s cubic-bezier(.16,1,.3,1) both` }}>{t}</span>
             </span>
           ))}
         </h1>
-        <p style={{ animation: "fadeUp .8s .75s cubic-bezier(.16,1,.3,1) both", fontSize: "1rem", lineHeight: 1.75, color: "rgba(255,255,255,.45)", maxWidth: 420, marginBottom: 48, fontWeight: 300 }}>
+        <p style={{ animation: "fadeUp .3s .1s cubic-bezier(.16,1,.3,1) both", fontSize: "1rem", lineHeight: 1.75, color: "rgba(255,255,255,.45)", maxWidth: 420, marginBottom: 48, fontWeight: 300 }}>
           Criação de sites, landing pages e presença digital completa — do design à entrega, com atenção a cada detalhe.
         </p>
-        <div style={{ animation: "fadeUp .8s .9s cubic-bezier(.16,1,.3,1) both", display: "flex", gap: 3, flexWrap: "wrap" }}>
+        <div style={{ animation: "fadeUp .3s .15s cubic-bezier(.16,1,.3,1) both", display: "flex", gap: 3, flexWrap: "wrap" }}>
           <a href="#servicos" style={{ background: "#c0392b", color: "#fff", fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", padding: "16px 36px", textDecoration: "none" }}>Ver planos →</a>
           <a href="#contato" style={{ background: "transparent", color: "rgba(255,255,255,.6)", fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", padding: "16px 36px", textDecoration: "none", border: "1.5px solid rgba(255,255,255,.15)" }}>Falar agora</a>
         </div>
@@ -404,7 +337,7 @@ function HeroSection() {
         flexDirection: "column",
         gap: 2,
         zIndex: 2,
-        animation: "fadeUp .8s 1.1s cubic-bezier(.16,1,.3,1) both",
+        animation: "fadeUp .3s .2s cubic-bezier(.16,1,.3,1) both",
         transition: "transform 0s"
       }}>
         {[["7", "d", "Landing Page"], ["21", "d", "Site Completo"], ["2", "×", "Revisões incl."]].map(([n, s, l]) => (
@@ -415,7 +348,7 @@ function HeroSection() {
         ))}
       </div>
 
-      <div style={{ position: "absolute", bottom: 40, left: 60, fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(255,255,255,.25)", display: "flex", alignItems: "center", gap: 12, animation: "fadeUp .8s 1.3s cubic-bezier(.16,1,.3,1) both", zIndex: 2 }}>
+      <div style={{ position: "absolute", bottom: 40, left: 60, fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(255,255,255,.25)", display: "flex", alignItems: "center", gap: 12, animation: "fadeUp .3s .25s cubic-bezier(.16,1,.3,1) both", zIndex: 2 }}>
         <span style={{ width: 1, height: 44, background: "linear-gradient(to bottom, #c0392b, transparent)", animation: "pulse 2s ease-in-out infinite", display: "block" }} />
         Scroll
       </div>
@@ -424,7 +357,7 @@ function HeroSection() {
 }
 
 function Marquee() {
-  const words = ["Sites", "✦", "Landing Pages", "✦", "SEO", "✦", "Google Maps", "✦", "WhatsApp", "✦", "Design", "✦", "Performance", "✦", "Mobile First", "✦"]
+  const words = ["Sites", "✦", "Landing Pages", "✦", "SEO", "✦", "Google Maps", "✦", "WhatsApp", "✦", "WordPress", "✦", "Design", "✦", "Performance", "✦", "Mobile First", "✦"]
   const doubled = [...words, ...words, ...words, ...words]
   return (
     <div style={{ background: "#c0392b", padding: "12px 0", overflow: "hidden" }}>
@@ -436,7 +369,7 @@ function Marquee() {
         transition: "transform 0.12s ease-out"
       }}>
         {doubled.map((w, i) => (
-          <span key={i} style={{ fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, fontSize: "0.72rem", letterSpacing: "0.24em", textTransform: "uppercase", color: w === "✦" ? "rgba(255,255,255,.3)" : "rgba(255,255,255,.85)", paddingRight: 32 }}>{w}</span>
+          <span key={i} style={{ fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 700, fontSize: "0.72rem", letterSpacing: "0.24em", textTransform: "uppercase", color: w === "✦" ? "rgba(255,255,255,.4)" : "#fff", paddingRight: 32 }}>{w}</span>
         ))}
       </div>
     </div>
@@ -450,7 +383,7 @@ function CSSCube({ size = 120, color1 = "#111", color2 = "#c0392b", speed = "12s
     `rotateY(90deg) translateZ(${size / 2}px)`, `rotateY(-90deg) translateZ(${size / 2}px)`,
     `rotateX(90deg) translateZ(${size / 2}px)`, `rotateX(-90deg) translateZ(${size / 2}px)`,
   ]
-  const labels = ["HTML", "CSS", "JS", "REACT", "UX", "Web"]
+  const labels = ["HTML", "CSS", "JS", "REACT", "UX", "WP"]
   return (
     <div style={{ width: size, height: size, perspective: 800, perspectiveOrigin: "50% 40%" }}>
       <div style={{ width: size, height: size, position: "relative", transformStyle: "preserve-3d", animation: `spin3d ${speed} linear infinite` }}>
@@ -548,16 +481,22 @@ function AboutSection() {
 }
 
 function PlanCard({ num, tag, name, price, period, features, deadline, featured }) {
+  const cardRef = useRef(null)
   return (
-    <Card3D style={{
+    <div ref={cardRef} className="plan-card" style={{
       background: featured ? "#111" : "#ece8df",
-      padding: "44px 32px",
+      padding: "40px 36px",
       position: "relative",
       overflow: "hidden",
       borderTop: `3px solid ${featured ? "#c0392b" : "#111"}`,
-      contain: "paint",
-      marginTop: featured ? -24 : 0
-    }}>
+      borderRadius: 8,
+      boxShadow: "0 2px 20px rgba(0,0,0,.06)",
+      marginTop: featured ? -24 : 0,
+      transition: "transform .25s ease, box-shadow .25s ease",
+      cursor: "default"
+    }}
+      onMouseEnter={() => { if (cardRef.current) { cardRef.current.style.transform = "translateY(-4px)"; cardRef.current.style.boxShadow = "0 8px 32px rgba(0,0,0,.1)" } }}
+      onMouseLeave={() => { if (cardRef.current) { cardRef.current.style.transform = ""; cardRef.current.style.boxShadow = "0 2px 20px rgba(0,0,0,.06)" } }}>
       <div style={{
         position: "absolute",
         top: 20,
@@ -579,21 +518,21 @@ function PlanCard({ num, tag, name, price, period, features, deadline, featured 
       <div style={{ height: 1, background: featured ? "rgba(255,255,255,.08)" : "rgba(0,0,0,.08)", marginBottom: 24 }} />
       <ul style={{ listStyle: "none" }}>
         {features.map((f, i) => (
-          <li key={i} style={{ display: "flex", gap: 10, padding: "8px 0", fontSize: "0.78rem", color: f.off ? (featured ? "rgba(255,255,255,.15)" : "#ccc") : (featured ? "rgba(255,255,255,.55)" : "#555"), borderBottom: `1px solid ${featured ? "rgba(255,255,255,.06)" : "rgba(0,0,0,.06)"}` }}>
+          <li key={i} style={{ display: "flex", gap: 10, padding: "8px 0", fontSize: "0.82rem", fontWeight: 500, color: f.off ? (featured ? "rgba(255,255,255,.35)" : "#999") : (featured ? "rgba(255,255,255,.65)" : "#444"), borderBottom: `1px solid ${featured ? "rgba(255,255,255,.06)" : "rgba(0,0,0,.06)"}` }}>
             <span style={{ flexShrink: 0, fontSize: "0.68rem", marginTop: 2, color: f.off ? "#666" : "#c0392b", fontWeight: 700 }}>{f.off ? "–" : "✓"}</span>
             {f.t}
           </li>
         ))}
       </ul>
       <div style={{ marginTop: 20, paddingTop: 14, borderTop: `1px solid ${featured ? "rgba(255,255,255,.07)" : "rgba(0,0,0,.07)"}`, fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: featured ? "rgba(255,255,255,.25)" : "#aaa" }}>{deadline}</div>
-    </Card3D>
+    </div>
   )
 }
 
 const PLANS = [
-  { num: "01", tag: "Mais rápido", name: "Landing Page", price: "500", period: "Pagamento único", deadline: "Entrega em 7 dias úteis", features: [{ t: "Design exclusivo e responsivo" }, { t: "Mobile-first" }, { t: "Formulário de contato / leads" }, { t: "Integração com WhatsApp" }, { t: "SEO básico" }, { t: "Certificado SSL (HTTPS)" }, { t: "Até 6 páginas internas", off: 1 }, { t: "Sistema de agendamento", off: 1 }, { t: "Blog com painel", off: 1 }, { t: "Treinamento incluído", off: 1 }] },
-  { num: "02", tag: "Mais completo", name: "Site Completo", price: "1.500", period: "Pagamento único", deadline: "Entrega em 21 dias úteis", featured: true, features: [{ t: "Design exclusivo e responsivo" }, { t: "Mobile-first" }, { t: "Formulário de contato / leads" }, { t: "Integração com WhatsApp" }, { t: "SEO básico" }, { t: "Certificado SSL (HTTPS)" }, { t: "Até 6 páginas internas" }, { t: "Sistema de agendamento" }, { t: "Blog com painel" }, { t: "Treinamento incluído" }] },
-  { num: "03", tag: "Presença local", name: "Google Meu Neg.", price: "150", period: "Por mês", deadline: "Gestão mensal contínua", features: [{ t: "Criação e configuração" }, { t: "Otimização Google Maps" }, { t: "Resposta a avaliações" }, { t: "Até 4 posts por mês" }, { t: "Atualização de infos" }, { t: "Relatório mensal" }, { t: "SEO local e regional" }] },
+  { num: "01", tag: "Mais rápido", name: "Landing Page", price: "500", period: "Pagamento único", deadline: "Entrega em 7 dias úteis", features: [{ t: "Design exclusivo" }, { t: "Adaptado para celular" }, { t: "Formulário de contato / captação de leads" }, { t: "Conexão com WhatsApp" }, { t: "Otimização básica para Google (SEO)" }, { t: "Seções: banner, sobre, serviços, contato" }, { t: "Certificado SSL (HTTPS)" }, { t: "Até 6 páginas internas", off: 1 }, { t: "Seção de agendamento online", off: 1 }, { t: "Blog integrado", off: 1 }, { t: "Treinamento de uso incluído", off: 1 }] },
+  { num: "02", tag: "Mais completo", name: "Site Completo", price: "1.500", period: "Pagamento único", deadline: "Entrega em 21 dias úteis", featured: true, features: [{ t: "Design exclusivo" }, { t: "Adaptado para celular" }, { t: "Formulário de contato / captação de leads" }, { t: "Conexão com WhatsApp" }, { t: "Otimização básica para Google (SEO)" }, { t: "Seções: banner, sobre, serviços, contato" }, { t: "Certificado SSL (HTTPS)" }, { t: "Até 6 páginas internas" }, { t: "Seção de agendamento online" }, { t: "Blog integrado" }, { t: "Treinamento de uso incluído" }] },
+  { num: "03", tag: "Presença local", name: "Google Meu Neg.", price: "150", period: "Por mês", deadline: "Gestão mensal contínua", features: [{ t: "Criação e configuração completa do perfil" }, { t: "Otimização para aparecer no Google Maps" }, { t: "Resposta a avaliações e comentários" }, { t: "Publicação de posts / novidades — até 4 por mês" }, { t: "Atualização de informações (promoções, horários)" }, { t: "Relatório mensal de desempenho" }, { t: "SEO local e palavras-chave regionais" }] },
 ]
 
 function PricingSection() {
@@ -606,23 +545,15 @@ function PricingSection() {
         <p style={{ fontSize: "0.82rem", color: "#888", maxWidth: 200, textAlign: "right", lineHeight: 1.6, fontWeight: 300 }}>Transparência total, entrega no prazo.</p>
       </div>
 
-      <div className="rv plans-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 2, transitionDelay: ".08s", alignItems: "stretch" }}>
-        {PLANS.map((p, i) => {
-          const factors = [-0.05, 0, -0.09]
-          const factor = factors[i]
-          return (
-            <div key={i} style={{
-              transform: `translateY(calc(max(0px, var(--scroll-y-smooth) - 1000px) * ${factor}))`,
-              transition: "transform 0s",
-              isolation: "isolate"
-            }}>
-              <PlanCard {...p} />
-            </div>
-          )
-        })}
+      <div className="rv plans-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20, transitionDelay: ".08s", alignItems: "stretch" }}>
+        {PLANS.map((p, i) => (
+          <div key={i}>
+            <PlanCard {...p} />
+          </div>
+        ))}
       </div>
 
-      <div className="rv extras-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, marginTop: 2, transitionDelay: ".14s" }}>
+      <div className="rv extras-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginTop: 20, transitionDelay: ".14s" }}>
         {[
           {
             title: "Manutenção\nMensal", priceEl: (
@@ -637,17 +568,17 @@ function PricingSection() {
           },
           {
             title: "Serviços\nAdicionais", priceEl: null,
-            items: [["Página extra além do plano", "R$ 120"], ["E-mail profissional @dominio", "R$ 100/ano"], ["Integração Instagram/WhatsApp", "R$ 80"], ["Criação de logo básica", "R$ 200"], ["Relatório de acessos e SEO", "R$ 60/mês"]]
+            items: [["Página extra além do plano", "R$ 120"], ["E-mail profissional @dominio", "R$ 100"], ["Integração Instagram / WhatsApp Business", "R$ 80"], ["Criação de logo básica", "R$ 100"], ["Relatório de acessos e SEO", "R$ 60/mês"]]
           }
         ].map((ex, i) => (
-          <div key={i} style={{ background: "#ece8df", padding: "40px 36px" }}>
+          <div key={i} style={{ background: "#ece8df", padding: "36px 32px", borderRadius: 8, boxShadow: "0 2px 20px rgba(0,0,0,.06)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28, flexWrap: "wrap", gap: 16 }}>
               <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "1.6rem", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.01em", color: "#111", lineHeight: 1 }}>{ex.title.replace("\\n", "\n").split("\n").map((l, j) => <span key={j} style={{ display: "block" }}>{l}</span>)}</div>
               {ex.priceEl}
             </div>
             <ul style={{ listStyle: "none" }}>
               {ex.items.map((item, j) => (
-                <li key={j} style={{ display: "flex", justifyContent: "space-between", gap: 16, padding: "9px 0", fontSize: "0.78rem", color: "#666", borderBottom: "1px solid rgba(0,0,0,.07)" }}>
+                <li key={j} style={{ display: "flex", justifyContent: "space-between", gap: 16, padding: "9px 0", fontSize: "0.82rem", color: "#666", borderBottom: "1px solid rgba(0,0,0,.07)" }}>
                   {Array.isArray(item) ? <><span>{item[0]}</span><strong style={{ fontWeight: 700, color: "#111", whiteSpace: "nowrap" }}>{item[1]}</strong></> : item}
                 </li>
               ))}
@@ -658,16 +589,20 @@ function PricingSection() {
 
       <div className="rv" style={{ marginTop: 52, transitionDelay: ".2s" }}>
         <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.24em", textTransform: "uppercase", color: "#aaa", marginBottom: 14 }}>Condições gerais</div>
-        <div className="conditions-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
-          {[["Pagamento", "50% na assinatura · 50% na entrega"], ["Revisões", "Até 2 rodadas incluídas"], ["Conteúdo", "Textos e imagens fornecidos pelo cliente"], ["Validade", "30 dias a partir da emissão"]].map(([k, v]) => (
-            <div key={k} style={{ background: "#ece8df", padding: "18px 24px", display: "flex", gap: 18, alignItems: "baseline" }}>
+        <div className="conditions-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          {[["Pagamento", "50% no início · 50% na entrega"], ["Revisões", "Até 2 rodadas de revisão incluídas"], ["Conteúdo", "Textos e imagens fornecidos pelo cliente"], ["Validade", "30 dias a partir da data de início"]].map(([k, v]) => (
+            <div key={k} style={{ background: "#ece8df", padding: "18px 24px", display: "flex", gap: 18, alignItems: "baseline", borderRadius: 8 }}>
               <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#aaa", minWidth: 110, flexShrink: 0 }}>{k}</span>
               <span style={{ fontSize: "0.82rem", color: "#666", lineHeight: 1.5, fontWeight: 300 }}>{v}</span>
             </div>
           ))}
-          <div style={{ background: "#ece8df", padding: "18px 24px", display: "flex", gap: 18, alignItems: "baseline", gridColumn: "span 2" }}>
+          <div style={{ background: "#ece8df", padding: "18px 24px", display: "flex", gap: 18, alignItems: "baseline", borderRadius: 8 }}>
+            <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#aaa", minWidth: 110, flexShrink: 0 }}>Domínio e<br />hospedagem</span>
+            <span style={{ fontSize: "0.82rem", color: "#666", lineHeight: 1.5, fontWeight: 300 }}>Não inclusos — orientação para contratação disponível.</span>
+          </div>
+          <div style={{ background: "#ece8df", padding: "18px 24px", display: "flex", gap: 18, alignItems: "baseline", gridColumn: "span 2", borderRadius: 8 }}>
             <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#aaa", minWidth: 110, flexShrink: 0 }}>Obs.</span>
-            <span style={{ fontSize: "0.82rem", color: "#666", lineHeight: 1.5, fontWeight: 300 }}>Domínio e hospedagem não inclusos — orientação disponível. Valores sujeitos a ajuste conforme escopo.</span>
+            <span style={{ fontSize: "0.82rem", color: "#666", lineHeight: 1.5, fontWeight: 300 }}>Valores sujeitos a ajuste conforme escopo. Proposta válida por 30 dias · Preços em Reais (R$) · Sujeito a contrato formal.</span>
           </div>
         </div>
       </div>
@@ -680,10 +615,10 @@ const SKILLS = [
   { n: "02", name: "JavaScript", desc: "Interatividade e animações fluidas" },
   { n: "03", name: "SEO", desc: "Otimização orgânica para o Google" },
   { n: "04", name: "REACT", desc: "Foco em conversão e usabilidade" },
-  { n: "05", name: "Mobile First", desc: "Perfeito em qualquer dispositivo" },
-  { n: "06", name: "WhatsApp", desc: "Integração direta para leads" },
-  { n: "07", name: "Google Maps", desc: "Presença local e visibilidade" },
-  { n: "08", name: "Performance", desc: "Sites rápidos e bem otimizados" },
+  { n: "05", name: "Responsividade", desc: "Perfeito em qualquer dispositivo" },
+  { n: "06", name: "Google Maps", desc: "Presença local e visibilidade" },
+  { n: "07", name: "Performance", desc: "Sites rápidos e bem otimizados" },
+  { n: "08", name: "WordPress", desc: "Gerenciamento de conteúdo dinâmico" },
 ]
 
 function SkillsSection() {
@@ -735,7 +670,7 @@ function ContactLink({ l }) {
       onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "22px 24px", background: hov ? "#e8e3d8" : "#ece8df", textDecoration: "none", color: "#111", borderLeft: `3px solid ${hov ? "#c0392b" : "transparent"}`, paddingLeft: hov ? 32 : 24, transition: "all .4s cubic-bezier(.16,1,.3,1)" }}>
       <div>
-        <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: hov ? "#111" : "#999", marginBottom: 4, transition: "color .25s" }}>{l.name}</div>
+        <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: hov ? "#111" : "#999", marginBottom: 4, transition: "color .25s", textAlign: "left" }}>{l.name}</div>
         <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "1.1rem", fontWeight: 600, color: hov ? "#c0392b" : "#111", transition: "color .25s" }}>{l.sub}</div>
       </div>
       <div style={{ width: 36, height: 36, border: `1.5px solid ${hov ? "#c0392b" : "#ddd"}`, background: hov ? "#c0392b" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem", color: hov ? "#fff" : "#999", transform: hov ? "translate(2px,-2px) rotate(45deg)" : "none", transition: "all .35s cubic-bezier(.16,1,.3,1)" }}>↗</div>
@@ -785,7 +720,7 @@ function Footer() {
       </div>
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,.08)", paddingTop: 30, fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,.3)", position: "relative", zIndex: 1 }}>
-        <div>© 2026 — Desenvolvimento Web & Design</div>
+        <div>© {new Date().getFullYear()} — Desenvolvimento Web & Design</div>
         <div style={{ display: "flex", gap: 32 }}>
           <span>Belo Horizonte, MG</span>
           <a href="#" style={{ color: "#c0392b", textDecoration: "none" }} className="hov-target">Voltar ao topo ↑</a>
@@ -815,6 +750,11 @@ export default function App() {
     window.addEventListener("scroll", onScroll, { passive: true })
 
     const loop = () => {
+      if (document.hidden) {
+        rafId = requestAnimationFrame(loop)
+        return
+      }
+
       currentY += (targetY - currentY) * 0.1
       if (Math.abs(targetY - currentY) < 0.05) {
         currentY = targetY
@@ -850,7 +790,7 @@ export default function App() {
 
   return (
     <>
-      <GlobalStyle />
+      <Analytics />
       <div id="prog" />
       <ProgressBar />
       <Header />
