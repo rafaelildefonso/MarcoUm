@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from "react"
+import { Routes, Route, Link, useLocation } from "react-router-dom"
 import { Analytics } from "@vercel/analytics/react"
+import PortfolioCarousel from "./PortfolioCarousel"
+import PortfolioPage from "./PortfolioPage"
 
 
 function ProgressBar() {
@@ -246,23 +249,37 @@ const HDR = {
   display: "flex", alignItems: "stretch", height: 58, fontFamily: "'Barlow Condensed',sans-serif"
 }
 function Header() {
+  const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
   const links = [
     ["#servicos", "Serviços"],
     ["#habilidades", "Skills"],
+    [null, "Portfolio"],
     ["#contato", "Contato"],
   ]
   return (
     <header style={HDR}>
-      <a href="#" style={{ display: "flex", alignItems: "center", padding: "0 24px", borderRight: "1px solid rgba(255,255,255,.1)", textDecoration: "none" }}>
+      <Link to="/" style={{ display: "flex", alignItems: "center", padding: "0 24px", borderRight: "1px solid rgba(255,255,255,.1)", textDecoration: "none" }}>
         <img src="/logo_full_cover.png" alt="Marco Um" width={131} height={40} style={{ display: "block" }} />
-      </a>
+      </Link>
       <nav className="desktop-nav" style={{ display: "flex", marginLeft: "auto" }}>
-        {links.map(([h, l]) => (
-          <a key={h} href={h} style={{ display: "flex", alignItems: "center", padding: "0 22px", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: h === "#contato" ? "#fff" : "rgba(255,255,255,.5)", textDecoration: "none", borderLeft: "1px solid rgba(255,255,255,.07)", background: h === "#contato" ? "#c0392b" : "transparent" }}>
-            {l}
-          </a>
-        ))}
+        {links.map(([h, l]) => {
+          if (h === null) return (
+            <Link key={l} to="/portfolio" style={{
+              display: "flex", alignItems: "center", padding: "0 22px", fontSize: "0.72rem", fontWeight: 700,
+              letterSpacing: "0.2em", textTransform: "uppercase", textDecoration: "none",
+              borderLeft: "1px solid rgba(255,255,255,.07)", background: "transparent",
+              color: location.pathname === "/portfolio" ? "#fff" : "rgba(255,255,255,.5)",
+            }}>
+              {l}
+            </Link>
+          )
+          return (
+            <a key={h} href={"/" + h} style={{ display: "flex", alignItems: "center", padding: "0 22px", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: h === "#contato" ? "#fff" : "rgba(255,255,255,.5)", textDecoration: "none", borderLeft: "1px solid rgba(255,255,255,.07)", background: h === "#contato" ? "#c0392b" : "transparent" }}>
+              {l}
+            </a>
+          )
+        })}
       </nav>
       <button className="hamburger-btn" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
         <span />
@@ -271,15 +288,25 @@ function Header() {
       </button>
       {menuOpen && (
         <div className="mobile-menu" onClick={() => setMenuOpen(false)}>
-          {links.map(([h, l]) => (
-            <a key={h} href={h} style={{
-              display: "block", padding: "16px 24px", fontSize: "0.82rem", fontWeight: 700,
-              letterSpacing: "0.2em", textTransform: "uppercase", textDecoration: "none",
-              color: h === "#contato" ? "#fff" : "rgba(255,255,255,.7)",
-              background: h === "#contato" ? "#c0392b" : "transparent",
-              borderBottom: "1px solid rgba(255,255,255,.07)"
-            }}>{l}</a>
-          ))}
+          {links.map(([h, l]) => {
+            if (h === null) return (
+              <Link key={l} to="/portfolio" style={{
+                display: "block", padding: "16px 24px", fontSize: "0.82rem", fontWeight: 700,
+                letterSpacing: "0.2em", textTransform: "uppercase", textDecoration: "none",
+                color: "rgba(255,255,255,.7)", background: "transparent",
+                borderBottom: "1px solid rgba(255,255,255,.07)"
+              }}>{l}</Link>
+            )
+            return (
+              <a key={h} href={"/" + h} style={{
+                display: "block", padding: "16px 24px", fontSize: "0.82rem", fontWeight: 700,
+                letterSpacing: "0.2em", textTransform: "uppercase", textDecoration: "none",
+                color: h === "#contato" ? "#fff" : "rgba(255,255,255,.7)",
+                background: h === "#contato" ? "#c0392b" : "transparent",
+                borderBottom: "1px solid rgba(255,255,255,.07)"
+              }}>{l}</a>
+            )
+          })}
         </div>
       )}
     </header>
@@ -723,7 +750,7 @@ function Footer() {
         <div>© {new Date().getFullYear()} — Desenvolvimento Web & Design</div>
         <div style={{ display: "flex", gap: 32 }}>
           <span>Belo Horizonte, MG</span>
-          <a href="#" style={{ color: "#c0392b", textDecoration: "none" }} className="hov-target">Voltar ao topo ↑</a>
+          <Link to="/" style={{ color: "#c0392b", textDecoration: "none" }} className="hov-target">Voltar ao topo ↑</Link>
         </div>
       </div>
     </footer>
@@ -731,9 +758,17 @@ function Footer() {
 }
 
 export default function App() {
+  const location = useLocation()
+  const isLanding = location.pathname === "/"
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [location.pathname])
+
   useReveal()
 
   useEffect(() => {
+    if (!isLanding) return
     let targetY = window.scrollY
     let currentY = window.scrollY
     let lastScrollY = window.scrollY
@@ -786,7 +821,7 @@ export default function App() {
       window.removeEventListener("scroll", onScroll)
       cancelAnimationFrame(rafId)
     }
-  }, [])
+  }, [isLanding])
 
   return (
     <>
@@ -794,13 +829,21 @@ export default function App() {
       <div id="prog" />
       <ProgressBar />
       <Header />
-      <HeroSection />
-      <Marquee />
-      <AboutSection />
-      <PricingSection />
-      <SkillsSection />
-      <ContactSection />
-      <Footer />
+      <Routes>
+        <Route path="/portfolio" element={<PortfolioPage />} />
+        <Route path="/" element={
+          <>
+            <HeroSection />
+            <Marquee />
+            <AboutSection />
+            <PortfolioCarousel />
+            <PricingSection />
+            <SkillsSection />
+            <ContactSection />
+            <Footer />
+          </>
+        } />
+      </Routes>
     </>
   )
 }

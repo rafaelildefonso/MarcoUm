@@ -1,0 +1,51 @@
+export const PORTFOLIO = [
+  {
+    id: 1,
+    title: "Rafael Ildefonso",
+    description: "Site pessoal / portfólio de desenvolvimento",
+    url: "https://rafaelildefonso.vercel.app/",
+    image: "/portfolio/rafaelildefonso.png",
+  },
+  {
+    id: 2,
+    title: "Shelf AI",
+    description: "Plataforma com inteligência artificial",
+    url: "https://shelf-ai.vercel.app/",
+    image: "/portfolio/shelf-ai.png",
+  },
+  {
+    id: 3,
+    title: "Herculion",
+    description: "Site institucional / marca",
+    url: "https://rafaelildefonso.github.io/Herculion/",
+    image: "/portfolio/herculion.png",
+  },
+  {
+    id: 4,
+    title: "Nova Flowers",
+    description: "Floricultura / e-commerce floral",
+    url: "https://lucapiovezan.github.io/Nova-Flowers/",
+    image: "/portfolio/nova-flowers.png",
+  },
+  {
+    id: 5,
+    title: "Heroes & Villains",
+    description: "Fan site de heróis e vilões",
+    url: "https://lucapiovezan.github.io/HEROES-VILLAINS/",
+    image: "/portfolio/heroes-villains.png",
+  },
+  {
+    id: 6,
+    title: "Valenza",
+    description: "Site institucional / marca pessoal",
+    url: "https://lucapiovezan.github.io/valenza/",
+    image: "/portfolio/valenza.png",
+  },
+  {
+    id: 7,
+    title: "Luca Dev",
+    description: "Portfólio pessoal de desenvolvimento",
+    url: "https://lucapiovezan.github.io/luca.dev/",
+    image: "/portfolio/luca-dev.png",
+  },
+]
