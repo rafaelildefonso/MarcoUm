@@ -20,8 +20,22 @@ function ProgressBar() {
 
 function useReveal() {
   useEffect(() => {
-    const io = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("in") }), { threshold: 0.07 })
-    setTimeout(() => document.querySelectorAll(".rv").forEach(el => io.observe(el)), 100)
+    const io = new IntersectionObserver(
+      entries => entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add("in")
+      }),
+      { threshold: 0 }
+    )
+    setTimeout(() => {
+      document.querySelectorAll(".rv").forEach(el => {
+        const rect = el.getBoundingClientRect()
+        if (rect.top < window.innerHeight) {
+          el.classList.add("in") // já visível, adiciona direto
+        } else {
+          io.observe(el) // fora da tela, observa normalmente
+        }
+      })
+    }, 100)
     return () => io.disconnect()
   }, [])
 }
@@ -275,7 +289,7 @@ function Header() {
             </Link>
           )
           return (
-            <a key={h} href={"/" + h} style={{ display: "flex", alignItems: "center", padding: "0 22px", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: h === "#contato" ? "#fff" : "rgba(255,255,255,.5)", textDecoration: "none", borderLeft: "1px solid rgba(255,255,255,.07)", background: h === "#contato" ? "#c0392b" : "transparent" }}>
+            <a key={h}  href={h} style={{ display: "flex", alignItems: "center", padding: "0 22px", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: h === "#contato" ? "#fff" : "rgba(255,255,255,.5)", textDecoration: "none", borderLeft: "1px solid rgba(255,255,255,.07)", background: h === "#contato" ? "#c0392b" : "transparent" }}>
               {l}
             </a>
           )
@@ -298,7 +312,7 @@ function Header() {
               }}>{l}</Link>
             )
             return (
-              <a key={h} href={"/" + h} style={{
+              <a key={h}href={h} style={{
                 display: "block", padding: "16px 24px", fontSize: "0.82rem", fontWeight: 700,
                 letterSpacing: "0.2em", textTransform: "uppercase", textDecoration: "none",
                 color: h === "#contato" ? "#fff" : "rgba(255,255,255,.7)",
@@ -762,8 +776,13 @@ export default function App() {
   const isLanding = location.pathname === "/"
 
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [location.pathname])
+  window.scrollTo(0, 0)
+  setTimeout(() => {
+    document.querySelectorAll(".rv").forEach(el => {
+      el.classList.add("in")
+    })
+  }, 200)
+}, [location.pathname])
 
   useReveal()
 
