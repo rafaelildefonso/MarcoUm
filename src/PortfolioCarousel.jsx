@@ -204,28 +204,28 @@ export default function PortfolioCarousel() {
           </h2>
         </div>
         <Link
-          to="/portfolio"
-          style={{
-            fontFamily: "'Barlow Condensed',sans-serif",
-            fontSize: "0.65rem",
-            fontWeight: 700,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            color: "#c0392b",
-            textDecoration: "none",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            paddingBottom: 4,
-            borderBottom: "1.5px solid #c0392b",
-            flexShrink: 0,
-            transition: "gap .2s ease",
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.gap = "12px" }}
-          onMouseLeave={(e) => { e.currentTarget.style.gap = "8px" }}
-        >
-          Ver todos os projetos →
-        </Link>
+  to="/portfolio"
+  style={{
+    fontFamily: "'Barlow Condensed',sans-serif",
+    fontSize: "0.75rem",
+    fontWeight: 700,
+    letterSpacing: "0.22em",
+    textTransform: "uppercase",
+    color: "#fff",
+    textDecoration: "none",
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    background: "#c0392b",
+    padding: "14px 28px",
+    flexShrink: 0,
+    transition: "background .2s ease, gap .2s ease",
+  }}
+  onMouseEnter={(e) => { e.currentTarget.style.background = "#a93226"; e.currentTarget.style.gap = "16px" }}
+  onMouseLeave={(e) => { e.currentTarget.style.background = "#c0392b"; e.currentTarget.style.gap = "10px" }}
+>
+  Ver todos os projetos →
+</Link>
       </div>
 
       <div
