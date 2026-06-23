@@ -616,7 +616,7 @@ function PricingSection() {
           },
           {
             title: "Serviços\nAdicionais", priceEl: null,
-            items: [["Página extra além do plano", "R$ 120"], ["E-mail profissional @dominio", "R$ 100"], ["Integração Instagram / WhatsApp Business", "R$ 80"], ["Criação de logo básica", "R$ 100"], ["Relatório de acessos e SEO", "R$ 60/mês"]]
+            items: [["Página extra além do plano", "R$ 120"], ["E-mail profissional @dominio", "R$ 100"], ["Integração Instagram / WhatsApp Business", "R$ 80"], ["Criação de logo básica", "R$ 100"], ["Relatório de acessos e SEO", "R$ 60/mês"], ["Linktree personalizado", "R$ 35"]]
           }
         ].map((ex, i) => (
           <div key={i} style={{ background: "#ece8df", padding: "36px 32px", borderRadius: 8, boxShadow: "0 2px 20px rgba(0,0,0,.06)" }}>
@@ -692,7 +692,7 @@ function SkillsSection() {
         {SKILLS.map((s) => (
           <Card3D key={s.n} style={{ background: "rgba(255,255,255,.03)", borderTop: "2px solid rgba(255,255,255,.06)" }}>
             <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.55rem", fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(255,255,255,.2)", marginBottom: 24 }}>{s.n}</div>
-            <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "1.5rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.02em", color: "#fff", marginBottom: 8, lineHeight: 1 }}>{s.name}</div>
+            <div className="skill-name" style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "1.5rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.02em", color: "#fff", marginBottom: 8, lineHeight: 1 }}>{s.name}</div>
             <div style={{ fontSize: "0.75rem", lineHeight: 1.6, color: "rgba(255,255,255,.4)", fontWeight: 300 }}>{s.desc}</div>
           </Card3D>
         ))}

@@ -91,8 +91,8 @@ export default function PortfolioPage() {
   return (
     <>
       <section
+        className="pp-hero"
         style={{
-          padding: "140px 60px 80px",
           background: "#111",
           position: "relative",
           overflow: "hidden",
@@ -172,15 +172,14 @@ export default function PortfolioPage() {
       </section>
 
       <section
+        className="pp-grid-section"
         style={{
-          padding: "80px 60px 120px",
           background: "#111",
         }}
       >
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
             gap: 24,
             maxWidth: 1400,
             margin: "0 auto",
@@ -194,8 +193,8 @@ export default function PortfolioPage() {
       </section>
 
       <section
+        className="pp-cta"
         style={{
-          padding: "100px 60px",
           background: "#f4f0e8",
           display: "flex",
           flexDirection: "column",
