@@ -92,7 +92,7 @@ export default function PortfolioPage() {
     <>
       <section
         style={{
-          padding: "140px 60px 80px",
+          padding: "100px 24px 60px",
           background: "#111",
           position: "relative",
           overflow: "hidden",
@@ -173,7 +173,7 @@ export default function PortfolioPage() {
 
       <section
         style={{
-          padding: "80px 60px 120px",
+          padding: "60px 24px 80px",
           background: "#111",
         }}
       >
@@ -195,7 +195,7 @@ export default function PortfolioPage() {
 
       <section
         style={{
-          padding: "100px 60px",
+          padding: "60px 24px",
           background: "#f4f0e8",
           display: "flex",
           flexDirection: "column",
@@ -255,7 +255,7 @@ export default function PortfolioPage() {
       <footer
         style={{
           background: "#111",
-          padding: "40px 60px",
+          padding: "40px 24px",
           borderTop: "1px solid rgba(255,255,255,.05)",
         }}
       >
