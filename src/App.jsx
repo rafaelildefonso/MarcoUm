@@ -1,3 +1,4 @@
+import * as THREE from "three"
 import { useState, useEffect, useRef } from "react"
 import { Routes, Route, Link, useLocation } from "react-router-dom"
 import { Analytics } from "@vercel/analytics/react"
@@ -53,18 +54,13 @@ function ThreeHero() {
     }, { threshold: 0 })
     if (mount) observer.observe(mount)
 
-    if (window.__THREE_LOADED) { initScene(); return }
-    const s = document.createElement("script")
-    s.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
-    s.onload = () => { window.__THREE_LOADED = true; initScene() }
-    document.head.appendChild(s)
+    initScene()
 
     function isMobile() {
       return window.innerWidth < 768
     }
 
     function initScene() {
-      const THREE = window.THREE
       if (!mount || sceneRef.current) return
 
       const mobile = isMobile()
