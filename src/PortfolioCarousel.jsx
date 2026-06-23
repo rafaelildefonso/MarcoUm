@@ -159,14 +159,16 @@ export default function PortfolioCarousel() {
         }}
       >
       <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-end",
-          padding: "0 60px",
-          marginBottom: 60,
-        }}
-      >
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    padding: "0 60px",
+    marginBottom: 60,
+    flexWrap: "wrap",      // ← evita sobreposição
+    gap: 24,               // ← espaço entre título e botão
+  }}
+>
         <div>
           <div
             style={{

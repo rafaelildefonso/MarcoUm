@@ -231,8 +231,8 @@ export default function PortfolioPage() {
         >
           Entre em contato e receba uma proposta personalizada para o seu site.
         </p>
-        <Link
-          to="/#contato"
+        <Link 
+          to="https://wa.me/5531985979676"
           style={{
             background: "#c0392b",
             color: "#fff",
