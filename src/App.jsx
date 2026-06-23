@@ -276,7 +276,7 @@ function Header() {
       <Link to="/" style={{ display: "flex", alignItems: "center", padding: "0 24px", borderRight: "1px solid rgba(255,255,255,.1)", textDecoration: "none" }}>
         <img src="/logo_full_cover.png" alt="Marco Um" width={131} height={40} style={{ display: "block" }} />
       </Link>
-      <nav className="desktop-nav" style={{ display: "flex", marginLeft: "auto" }}>
+      <nav className="desktop-nav" style={{ marginLeft: "auto" }}>
         {links.map(([h, l]) => {
           if (h === null) return (
             <Link key={l} to="/portfolio" style={{
@@ -337,7 +337,6 @@ function HeroSection() {
       <div className="hero-content" style={{
         position: "relative",
         zIndex: 2,
-        padding: "120px 60px 80px",
         transform: "translateY(calc(var(--scroll-y-smooth) * 0.2))",
         opacity: "max(0, calc(1 - var(--scroll-y-smooth) / 600px))",
         transition: "transform 0s, opacity 0s"
@@ -390,7 +389,6 @@ function HeroSection() {
         right: 60,
         top: "50%",
         transform: "translateY(calc(-50% + (var(--scroll-y-smooth) * 0.15)))",
-        display: "flex",
         flexDirection: "column",
         gap: 2,
         zIndex: 2,
@@ -405,7 +403,7 @@ function HeroSection() {
         ))}
       </div>
 
-      <div className="hero-scroll" style={{ position: "absolute", bottom: 40, left: 60, fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(255,255,255,.25)", display: "flex", alignItems: "center", gap: 12, animation: "fadeUp .3s .25s cubic-bezier(.16,1,.3,1) both", zIndex: 2 }}>
+      <div className="hero-scroll" style={{ position: "absolute", bottom: 40, fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(255,255,255,.25)", display: "flex", alignItems: "center", gap: 12, animation: "fadeUp .3s .25s cubic-bezier(.16,1,.3,1) both", zIndex: 2 }}>
         <span style={{ width: 1, height: 44, background: "linear-gradient(to bottom, #c0392b, transparent)", animation: "pulse 2s ease-in-out infinite", display: "block" }} />
         Scroll
       </div>
@@ -463,7 +461,7 @@ function CSSCube({ size = 120, color1 = "#111", color2 = "#c0392b", speed = "12s
 
 function AboutSection() {
   return (
-    <section className="about-grid rv" style={{ padding: "120px 60px", background: "#f4f0e8", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 100, alignItems: "center", position: "relative", overflow: "hidden" }}>
+    <section className="about-grid rv" style={{ background: "#f4f0e8", display: "grid", alignItems: "center", position: "relative", overflow: "hidden" }}>
       <div style={{
         position: "absolute", top: "20%", left: "5%", width: 300, height: 300, borderRadius: "50%",
         border: "1.5px solid rgba(192, 57, 43, 0.06)", pointerEvents: "none",
@@ -498,7 +496,7 @@ function AboutSection() {
         </div>
       </div>
 
-      <div className="about-cubes" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, position: "relative", zIndex: 1 }}>
+      <div className="about-cubes" style={{ flexDirection: "column", alignItems: "center", gap: 24, position: "relative", zIndex: 1 }}>
         {[
           { size: 160, speed: "10s", color1: "#111", color2: "#c0392b", factor: -0.1 },
           { size: 120, speed: "8s", color1: "#c0392b", color2: "#333", factor: -0.22 },
@@ -590,8 +588,8 @@ const PLANS = [
 
 function PricingSection() {
   return (
-    <section className="pricing-section" style={{ padding: "120px 60px", background: "#f4f0e8" }} id="servicos">
-      <div className="rv pricing-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 60, borderBottom: "2px solid #111", paddingBottom: 24 }}>
+    <section className="pricing-section" style={{ background: "#f4f0e8" }} id="servicos">
+      <div className="rv pricing-header" style={{ display: "flex", justifyContent: "space-between", marginBottom: 60, borderBottom: "2px solid #111", paddingBottom: 24 }}>
         <h2 style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "clamp(2.5rem,5vw,5rem)", fontWeight: 900, textTransform: "uppercase", lineHeight: 0.9, letterSpacing: "-0.01em", color: "#111" }}>
           Planos &<br /><span style={{ color: "#c0392b", fontStyle: "italic" }}>Preços</span>
         </h2>
@@ -599,7 +597,7 @@ function PricingSection() {
       </div>
 
       {/* ← 4 colunas para acomodar o novo card */}
-      <div className="rv plans-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 20, transitionDelay: ".08s", alignItems: "start" }}>
+      <div className="rv plans-grid" style={{ display: "grid", gap: 20, transitionDelay: ".08s", alignItems: "start" }}>
         {PLANS.map((p, i) => (
           <div key={i}>
             <PlanCard {...p} />
@@ -607,7 +605,7 @@ function PricingSection() {
         ))}
       </div>
 
-      <div className="rv extras-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginTop: 20, transitionDelay: ".14s" }}>
+      <div className="rv extras-grid" style={{ display: "grid", gap: 20, marginTop: 20, transitionDelay: ".14s" }}>
         {[
           {
             title: "Manutenção\nMensal", priceEl: (
@@ -643,7 +641,7 @@ function PricingSection() {
 
       <div className="rv" style={{ marginTop: 52, transitionDelay: ".2s" }}>
         <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.24em", textTransform: "uppercase", color: "#aaa", marginBottom: 14 }}>Condições gerais</div>
-        <div className="conditions-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <div className="conditions-grid" style={{ display: "grid", gap: 12 }}>
           {[["Pagamento", "50% no início · 50% na entrega"], ["Revisões", "Até 2 rodadas de revisão incluídas"], ["Conteúdo", "Textos e imagens fornecidos pelo cliente"], ["Validade", "30 dias a partir da data de início"]].map(([k, v]) => (
             <div key={k} style={{ background: "#ece8df", padding: "18px 24px", display: "flex", gap: 18, alignItems: "baseline", borderRadius: 8 }}>
               <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#aaa", minWidth: 110, flexShrink: 0 }}>{k}</span>
@@ -654,7 +652,7 @@ function PricingSection() {
             <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#aaa", minWidth: 110, flexShrink: 0 }}>Domínio e<br />hospedagem</span>
             <span style={{ fontSize: "0.82rem", color: "#666", lineHeight: 1.5, fontWeight: 300 }}>Não inclusos — orientação para contratação disponível.</span>
           </div>
-          <div className="conditions-wide" style={{ background: "#ece8df", padding: "18px 24px", display: "flex", gap: 18, alignItems: "baseline", gridColumn: "span 2", borderRadius: 8 }}>
+          <div className="conditions-wide" style={{ background: "#ece8df", padding: "18px 24px", display: "flex", gap: 18, alignItems: "baseline", borderRadius: 8 }}>
             <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#aaa", minWidth: 110, flexShrink: 0 }}>Obs.</span>
             <span style={{ fontSize: "0.82rem", color: "#666", lineHeight: 1.5, fontWeight: 300 }}>Valores sujeitos a ajuste conforme escopo. Proposta válida por 30 dias · Preços em Reais (R$) · Sujeito a contrato formal.</span>
           </div>
@@ -677,7 +675,7 @@ const SKILLS = [
 
 function SkillsSection() {
   return (
-    <section className="skills-section" style={{ padding: "120px 60px", background: "#111", position: "relative", overflow: "hidden" }} id="habilidades">
+    <section className="skills-section" style={{ background: "#111", position: "relative", overflow: "hidden" }} id="habilidades">
       <div style={{
         position: "absolute", top: "35%", right: "-10%", whiteSpace: "nowrap",
         fontFamily: "'Barlow Condensed',sans-serif", fontSize: "16vw", fontWeight: 900,
@@ -694,9 +692,9 @@ function SkillsSection() {
         </h2>
         <CSSCube size={90} speed="9s" color1="#1a1a1a" color2="#c0392b" />
       </div>
-      <div className="rv skills-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 2, transitionDelay: ".08s", position: "relative", zIndex: 1 }}>
+      <div className="rv skills-grid" style={{ display: "grid", gap: 2, transitionDelay: ".08s", position: "relative", zIndex: 1 }}>
         {SKILLS.map((s) => (
-          <Card3D key={s.n} style={{ background: "rgba(255,255,255,.03)", padding: "36px 26px", borderTop: "2px solid rgba(255,255,255,.06)" }}>
+          <Card3D key={s.n} style={{ background: "rgba(255,255,255,.03)", borderTop: "2px solid rgba(255,255,255,.06)" }}>
             <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.55rem", fontWeight: 700, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(255,255,255,.2)", marginBottom: 24 }}>{s.n}</div>
             <div style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "1.5rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.02em", color: "#fff", marginBottom: 8, lineHeight: 1 }}>{s.name}</div>
             <div style={{ fontSize: "0.75rem", lineHeight: 1.6, color: "rgba(255,255,255,.4)", fontWeight: 300 }}>{s.desc}</div>
@@ -728,8 +726,8 @@ function ContactSection() {
     { href: "https://wa.me/5531985979676", name: "WhatsApp", sub: "Resposta rápida" },
   ]
   return (
-    <section className="contact-section" style={{ padding: "120px 60px 100px", background: "#f4f0e8" }} id="contato">
-      <div className="contact-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}>
+    <section className="contact-section" style={{ background: "#f4f0e8" }} id="contato">
+      <div className="contact-grid" style={{ display: "grid", alignItems: "start" }}>
         <div className="rv">
           <h2 style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "clamp(3.5rem,7vw,7rem)", fontWeight: 900, textTransform: "uppercase", lineHeight: 0.88, letterSpacing: "-0.01em", color: "#111", marginBottom: 24 }}>
             Vamos<br />trabalhar<br /><span style={{ fontStyle: "italic", color: "#c0392b" }}>juntos</span>
@@ -748,7 +746,7 @@ function ContactSection() {
 
 function Footer() {
   return (
-    <footer style={{ background: "#111", padding: "80px 60px 40px", fontFamily: "'Barlow Condensed',sans-serif", borderTop: "1px solid rgba(255,255,255,.05)", position: "relative", overflow: "hidden" }}>
+    <footer style={{ background: "#111", fontFamily: "'Barlow Condensed',sans-serif", borderTop: "1px solid rgba(255,255,255,.05)", position: "relative", overflow: "hidden" }}>
       <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(255,255,255,.005) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.005) 1px,transparent 1px)", backgroundSize: "40px 40px", pointerEvents: "none" }} />
 
       <div style={{ display: "flex", justifyContent: "center", alignItems: "baseline", fontSize: "clamp(4rem, 15vw, 11rem)", fontWeight: 900, textTransform: "uppercase", letterSpacing: "-0.03em", color: "#fff", lineHeight: 1, marginBottom: 60, position: "relative", zIndex: 1 }}>
@@ -763,7 +761,7 @@ function Footer() {
         <span style={{ display: "inline-block", marginLeft: "0.22em", color: "#f4f0e8" }}>UM</span>
       </div>
 
-      <div className="footer-bottom" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,.08)", paddingTop: 30, fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,.3)", position: "relative", zIndex: 1 }}>
+      <div className="footer-bottom" style={{ display: "flex", borderTop: "1px solid rgba(255,255,255,.08)", paddingTop: 30, fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,.3)", position: "relative", zIndex: 1 }}>
         <div>© {new Date().getFullYear()} — Desenvolvimento Web & Design</div>
         <div style={{ display: "flex", gap: 32 }}>
           <span>Belo Horizonte, MG</span>
