@@ -76,16 +76,11 @@
       @media (max-width: 768px) {
         .portfolio-grid{grid-template-columns:1fr!important}
         .back-to-home-desktop{display:block!important}
-      }
-      @media (min-width: 769px) and (max-width: 1024px) {
-        .portfolio-grid{grid-template-columns:repeat(2,1fr)!important}
-      }
-      @media (max-width: 768px) {
         .desktop-nav{display:none!important}
         .hamburger-btn{display:flex!important}
-        section[style*="min-height: 100vh"] > div[style*="padding: 120px"]{padding:100px 24px 60px!important}
-        section[style*="min-height: 100vh"] > div[style*="right: 60px"]{display:none!important}
-        section[style*="min-height: 100vh"] > div[style*="bottom: 40px"]{left:24px!important}
+        .hero-section .hero-content{padding:100px 24px 60px!important}
+        .hero-section .hero-stats{display:none!important}
+        .hero-section .hero-scroll{left:24px!important}
         .about-grid{grid-template-columns:1fr!important;gap:48px!important;padding:72px 24px!important}
         .about-cubes{display:none!important}
         .pricing-section{padding:72px 24px!important}
@@ -95,14 +90,14 @@
         .plans-grid>div{transform:none!important}
         .extras-grid{grid-template-columns:1fr!important}
         .conditions-grid{grid-template-columns:1fr!important}
-        .conditions-grid>div[style*="span 2"]{grid-column:span 1!important}
+        .conditions-grid .conditions-wide{grid-column:span 1!important}
         .skills-section{padding:72px 24px!important}
         .skills-grid{grid-template-columns:repeat(2,1fr)!important;overflow:hidden!important}
         .skills-grid .hov-target{padding:24px 16px!important}
         .contact-section{padding:72px 24px 60px!important}
         .contact-grid{grid-template-columns:1fr!important;gap:40px!important}
         footer{padding:60px 24px 32px!important}
-        footer>div[style*="justify-content: space-between"]:last-child{flex-direction:column!important;gap:12px!important;align-items:flex-start!important}
+        .footer-bottom{flex-direction:column!important;gap:12px!important;align-items:flex-start!important}
       }
       @media (min-width: 769px) and (max-width: 1024px) {
         .skills-grid{grid-template-columns:repeat(4,1fr)!important}

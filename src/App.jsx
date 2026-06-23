@@ -329,7 +329,7 @@ function Header() {
 
 function HeroSection() {
   return (
-    <section style={{ minHeight: "100vh", background: "#111", position: "relative", overflow: "hidden", display: "flex", alignItems: "center" }}>
+    <section className="hero-section" style={{ minHeight: "100vh", background: "#111", position: "relative", overflow: "hidden", display: "flex", alignItems: "center" }}>
       <ThreeHero />
 
       <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px)", backgroundSize: "60px 60px", pointerEvents: "none" }} />
@@ -654,7 +654,7 @@ function PricingSection() {
             <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#aaa", minWidth: 110, flexShrink: 0 }}>Domínio e<br />hospedagem</span>
             <span style={{ fontSize: "0.82rem", color: "#666", lineHeight: 1.5, fontWeight: 300 }}>Não inclusos — orientação para contratação disponível.</span>
           </div>
-          <div style={{ background: "#ece8df", padding: "18px 24px", display: "flex", gap: 18, alignItems: "baseline", gridColumn: "span 2", borderRadius: 8 }}>
+          <div className="conditions-wide" style={{ background: "#ece8df", padding: "18px 24px", display: "flex", gap: 18, alignItems: "baseline", gridColumn: "span 2", borderRadius: 8 }}>
             <span style={{ fontFamily: "'Barlow Condensed',sans-serif", fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#aaa", minWidth: 110, flexShrink: 0 }}>Obs.</span>
             <span style={{ fontSize: "0.82rem", color: "#666", lineHeight: 1.5, fontWeight: 300 }}>Valores sujeitos a ajuste conforme escopo. Proposta válida por 30 dias · Preços em Reais (R$) · Sujeito a contrato formal.</span>
           </div>
@@ -763,7 +763,7 @@ function Footer() {
         <span style={{ display: "inline-block", marginLeft: "0.22em", color: "#f4f0e8" }}>UM</span>
       </div>
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,.08)", paddingTop: 30, fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,.3)", position: "relative", zIndex: 1 }}>
+      <div className="footer-bottom" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,.08)", paddingTop: 30, fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,.3)", position: "relative", zIndex: 1 }}>
         <div>© {new Date().getFullYear()} — Desenvolvimento Web & Design</div>
         <div style={{ display: "flex", gap: 32 }}>
           <span>Belo Horizonte, MG</span>
